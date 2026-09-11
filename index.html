@@ -349,7 +349,7 @@
             border-top: 55px solid #64748b;
         }
 
-        /* Cadran tournant (sans transition CSS pour éviter les saccades/conflits) */
+        /* Cadran tournant fluide */
         .compass-labels {
             position: absolute;
             width: 100%;
@@ -360,14 +360,30 @@
             z-index: 1;
         }
 
-        .c-n { position: absolute; top: 6px; left: calc(50% - 4px); color: #ef4444; font-weight: 900; }
-        .c-ne { position: absolute; top: 18px; right: 18px; font-size: 0.65rem; color: var(--text-muted); }
-        .c-e { position: absolute; right: 10px; top: calc(50% - 10px); }
-        .c-se { position: absolute; bottom: 18px; right: 18px; font-size: 0.65rem; color: var(--text-muted); }
-        .c-s { position: absolute; bottom: 6px; left: calc(50% - 4px); }
-        .c-sw { position: absolute; bottom: 18px; left: 18px; font-size: 0.65rem; color: var(--text-muted); }
-        .c-w { position: absolute; left: 10px; top: calc(50% - 10px); }
-        .c-nw { position: absolute; top: 18px; left: 18px; font-size: 0.65rem; color: var(--text-muted); }
+        /* Graduations sur le pourtour */
+        .compass-tick {
+            position: absolute;
+            top: 4px;
+            left: calc(50% - 1px);
+            width: 2px;
+            height: 5px;
+            background: rgba(255, 255, 255, 0.25);
+            transform-origin: 50% 71px;
+        }
+        .compass-tick.major {
+            width: 2px;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        .c-n { position: absolute; top: 12px; left: calc(50% - 5px); color: #ef4444; font-weight: 900; }
+        .c-ne { position: absolute; top: 26px; right: 28px; font-size: 0.6rem; color: var(--text-muted); }
+        .c-e { position: absolute; right: 12px; top: calc(50% - 10px); }
+        .c-se { position: absolute; bottom: 26px; right: 28px; font-size: 0.6rem; color: var(--text-muted); }
+        .c-s { position: absolute; bottom: 12px; left: calc(50% - 4px); }
+        .c-sw { position: absolute; bottom: 26px; left: 28px; font-size: 0.6rem; color: var(--text-muted); }
+        .c-w { position: absolute; left: 12px; top: calc(50% - 10px); }
+        .c-nw { position: absolute; top: 26px; left: 28px; font-size: 0.6rem; color: var(--text-muted); }
 
         #photo-input { display: none; }
 
@@ -446,8 +462,23 @@
         <h2>🧭 Orientation & Vent</h2>
         <div class="compass-container">
             <div class="compass-dial">
-                <!-- Cadran gradué enrichi (N, NE, E, SE, S, SW, O, NW) -->
+                <!-- Cadran tournant avec graduations et points cardinaux/intermédiaires -->
                 <div id="compass-labels" class="compass-labels">
+                    <!-- Graduations tous les 30° -->
+                    <div class="compass-tick major" style="transform: rotate(0deg);"></div>
+                    <div class="compass-tick" style="transform: rotate(30deg);"></div>
+                    <div class="compass-tick" style="transform: rotate(60deg);"></div>
+                    <div class="compass-tick major" style="transform: rotate(90deg);"></div>
+                    <div class="compass-tick" style="transform: rotate(120deg);"></div>
+                    <div class="compass-tick" style="transform: rotate(150deg);"></div>
+                    <div class="compass-tick major" style="transform: rotate(180deg);"></div>
+                    <div class="compass-tick" style="transform: rotate(210deg);"></div>
+                    <div class="compass-tick" style="transform: rotate(240deg);"></div>
+                    <div class="compass-tick major" style="transform: rotate(270deg);"></div>
+                    <div class="compass-tick" style="transform: rotate(300deg);"></div>
+                    <div class="compass-tick" style="transform: rotate(330deg);"></div>
+
+                    <!-- Points -->
                     <span class="c-n">N</span>
                     <span class="c-ne">NE</span>
                     <span class="c-e">E</span>
@@ -603,7 +634,6 @@
                     if (diff > 180) diff -= 360;
                     if (diff < -180) diff += 360;
                     
-                    // Amorti plus bas (0.08) pour éliminer les à-coups et assurer une grande fluidité
                     smoothedHeading += diff * 0.08;
                     
                     if (smoothedHeading < 0) smoothedHeading += 360;
