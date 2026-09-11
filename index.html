@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
   <meta name="theme-color" content="#020617">
-  <meta name="description" content="Vigie Feu — assistance citoyenne à la localisation et à la transmission d'informations lors d'un départ de feu.[span_0](start_span)[span_0](end_span)">
+  <meta name="description" content="Vigie Feu — assistance citoyenne à la localisation et à la transmission d'informations lors d'un départ de feu.">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <title>Vigie Feu — V2</title>
@@ -368,4 +368,5 @@ async function reverseGeocode(lat,lon){
     updateReport();
   }catch(e){
     $('city').textContent=state.city||'Indisponible hors connexion';
-    $('address').textContent=state.address||'Sec
+    $('address').textContent=state.address||'Secteur naturel / voie non répertoriée';
+  
