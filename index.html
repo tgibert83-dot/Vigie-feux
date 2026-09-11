@@ -29,8 +29,8 @@
     .btn{border:1px solid var(--line);background:#0b1220;color:#cbd5e1;border-radius:12px;padding:8px 11px;font-size:11px;font-weight:700}
     .brand{display:flex;gap:13px;align-items:center;background:linear-gradient(90deg,#0f172a,#0b122080);border:1px solid var(--line);
       border-radius:22px;padding:14px;box-shadow:0 14px 35px #0005}
-    .logo{width:56px;height:56px;border-radius:17px;overflow:hidden;border:1px solid #475569;flex:none;background:#000}
-    .logo img{width:100%;height:100%;object-fit:cover}
+    .logo{width:52px;height:52px;border-radius:17px;background:linear-gradient(135deg,#4c0519,#312e81);display:grid;place-items:center;border:1px solid #475569}
+    .logo svg{width:34px}
     h1{font-size:25px;margin:0;font-weight:900;letter-spacing:-.04em}
     .sub{font-size:11px;color:var(--muted);margin-top:4px}
     section{background:#0f172af0;border:1px solid #1e293bcc;border-radius:25px;padding:17px;margin-top:14px;box-shadow:0 14px 30px #0005}
@@ -94,7 +94,11 @@
 
   <header class="brand">
     <div class="logo" aria-hidden="true">
-      <img src="./favicon.png" alt="Vigie Feu Logo">
+      <svg viewBox="0 0 64 64" fill="none">
+        <circle cx="32" cy="32" r="26" stroke="#a5b4fc" stroke-width="4"/>
+        <path d="M32 8v48M8 32h48" stroke="#64748b" stroke-width="2"/>
+        <path d="M32 13l8 24-8-4-8 4 8-24z" fill="#fb7185"/>
+      </svg>
     </div>
     <div>
       <h1>Vigie Feu 🧭</h1>
@@ -364,173 +368,4 @@ async function reverseGeocode(lat,lon){
     updateReport();
   }catch(e){
     $('city').textContent=state.city||'Indisponible hors connexion';
-    $('address').textContent=state.address||'Secteur naturel / voie non répertoriée';
-  }
-}
-async function getWeather(lat,lon){
-  const now=Date.now();
-  if(now-state.lastWeather<120000) return;
-  state.lastWeather=now;
-  setWeatherStatus('Actualisation…','warn');
-  try{
-    const ctrl=new AbortController(); const timer=setTimeout(()=>ctrl.abort(),7000);
-    const url=`https://api.open-meteo.com/v1/forecast?latitude=${encodeURIComponent(lat)}&longitude=${encodeURIComponent(lon)}&current=wind_speed_10m,wind_direction_10m&wind_speed_unit=kmh`;
-    const res=await fetch(url,{signal:ctrl.signal});
-    clearTimeout(timer);
-    if(!res.ok) throw new Error('weather');
-    const data=await res.json(), cur=data.current||{};
-    if(!Number.isFinite(cur.wind_speed_10m)||!Number.isFinite(cur.wind_direction_10m)) throw new Error('weather data');
-    state.wind.speed=Math.round(cur.wind_speed_10m);
-    state.wind.direction=Math.round(cur.wind_direction_10m);
-    state.wind.cardinal=cardinal(state.wind.direction);
-    $('windSpeed').textContent=`${state.wind.speed} km/h`;
-    $('windDir').textContent=`${state.wind.direction}° ${state.wind.cardinal}`;
-    setWeatherStatus('Disponible','ok'); updateReport();
-  }catch(e){
-    setWeatherStatus('Indisponible','bad');
-    $('windSpeed').textContent='--'; $('windDir').textContent='--';
-  }
-}
-function handlePosition(pos){
-  const {latitude,longitude,accuracy}=pos.coords;
-  state.coords={lat:latitude,lon:longitude,accuracy};
-  state.dms=`${dms(latitude,true)} ${dms(longitude,false)}`;
-  $('coords').textContent=`${latitude.toFixed(6)}, ${longitude.toFixed(6)}`;
-  $('accuracy').textContent=`±${Math.round(accuracy)} m`;
-  $('dms').textContent=state.dms;
-  setGpsStatus(`GPS calé ±${Math.round(accuracy)} m`,'ok');
-  $('locationNote').textContent='GPS disponible. L’adresse et la météo sont des services réseau secondaires.';
-  updateReport();
-  reverseGeocode(latitude,longitude);
-  getWeather(latitude,longitude);
-}
-function gpsError(err){
-  const msg={1:'Autorisation GPS refusée',2:'Position indisponible',3:'Délai GPS dépassé'}[err.code]||'Erreur GPS';
-  setGpsStatus(msg,'bad');
-  $('locationNote').textContent='La position n’a pas pu être obtenue. Vérifiez l’autorisation de localisation.';
-}
-function requestGPS(){
-  if(!navigator.geolocation){gpsError({code:2});return}
-  setGpsStatus('Recherche…','warn');
-  navigator.geolocation.getCurrentPosition(handlePosition,gpsError,{enableHighAccuracy:true,timeout:15000,maximumAge:0});
-}
-let watchId=null;
-if(navigator.geolocation){
-  watchId=navigator.geolocation.watchPosition(handlePosition,gpsError,{enableHighAccuracy:true,timeout:20000,maximumAge:5000});
-}
-
-let smoothedHeading = null;
-function orientationHandler(e){
-  let raw=null;
-  if(Number.isFinite(e.webkitCompassHeading)) raw=e.webkitCompassHeading;
-  else if(Number.isFinite(e.alpha)) raw=e.absolute ? (360-e.alpha) : (360-e.alpha);
-  if(!Number.isFinite(raw)) return;
-  raw=((raw%360)+360)%360;
-
-  // Lissage pour éviter les sauts brusques de la boussole
-  if(smoothedHeading === null) {
-    smoothedHeading = raw;
-  } else {
-    let diff = raw - smoothedHeading;
-    if (diff > 180) diff -= 360;
-    if (diff < -180) diff += 360;
-    smoothedHeading = (smoothedHeading + diff * 0.2 + 360) % 360;
-  }
-
-  state.heading=Math.round(smoothedHeading);
-  $('heading').textContent=`Cap téléphone : ${state.heading}°`;
-  $('aim').textContent=`${state.heading}°`;
-  $('aimCardinal').textContent=`Direction de visée : ${cardinal(state.heading)} — à confirmer visuellement.`;
-  $('headingStatus').textContent='Cap disponible — maintenez le téléphone vers la zone observée.';
-  $('headingStatus').className='small';
-  const target=-smoothedHeading;
-  $('dial').style.transform=`rotate(${target}deg)`;
-  updateReport();
-}
-async function activateCompass(){
-  try{
-    if(typeof DeviceOrientationEvent==='undefined'){
-      toast('Boussole non disponible sur cet appareil'); return;
-    }
-    if(typeof DeviceOrientationEvent.requestPermission==='function'){
-      const permission=await DeviceOrientationEvent.requestPermission();
-      if(permission!=='granted'){toast('Autorisation boussole refusée');return}
-    }
-    window.addEventListener('deviceorientationabsolute',orientationHandler,true);
-    window.addEventListener('deviceorientation',orientationHandler,true);
-    state.orientationActive=true; $('compassBtn').textContent='Boussole active ✓';
-    toast('Boussole activée');
-  }catch(e){toast('Impossible d’activer la boussole')}
-}
-
-function drawPhoto(file){
-  const reader=new FileReader();
-  reader.onload=ev=>{
-    const img=new Image();
-    img.onload=()=>{
-      const max=1400; let w=img.naturalWidth,h=img.naturalHeight;
-      if(Math.max(w,h)>max){const scale=max/Math.max(w,h);w=Math.round(w*scale);h=Math.round(h*scale)}
-      const canvas=document.createElement('canvas'); canvas.width=w;canvas.height=h;
-      const ctx=canvas.getContext('2d');ctx.drawImage(img,0,0,w,h);
-      const now=new Date(), date=now.toLocaleDateString('fr-FR'),time=now.toLocaleTimeString('fr-FR');
-      const gps=state.coords.lat!==null ? `${state.coords.lat.toFixed(6)}, ${state.coords.lon.toFixed(6)}` : 'GPS indisponible';
-      const line1=`VIGIE FEU • ${date} ${time}${state.heading!==null?' • CAP '+state.heading+'°':''}`;
-      const line2=`GPS • ${gps}`;
-      const fs=Math.max(18,Math.round(w*.025)), pad=Math.round(fs*.7), bh=fs*2.8+pad*2;
-      ctx.fillStyle='#020617';ctx.fillRect(0,h-bh,w,bh);ctx.fillStyle='#e11d48';ctx.fillRect(0,h-bh,w,4);
-      ctx.font=`bold ${fs}px ui-monospace,monospace`;ctx.textBaseline='top';ctx.fillStyle='#fff';ctx.fillText(line1,pad,h-bh+pad);
-      ctx.fillStyle='#34d399';ctx.fillText(line2,pad,h-bh+pad+fs*1.3);
-      canvas.toBlob(blob=>{
-        if(!blob){toast('Erreur lors du traitement photo');return}
-        state.photoBlob=blob;state.photoUrl=URL.createObjectURL(blob);
-        $('photoPreview').src=state.photoUrl;$('photoMetaTime').textContent=line1;$('photoMetaGps').textContent=line2;
-        $('photoBox').style.display='block';toast('Photo horodatée');
-      },'image/jpeg',.9);
-    };img.src=ev.target.result;
-  };reader.readAsDataURL(file);
-}
-async function sharePhoto(){
-  if(!state.photoBlob)return;
-  const file=new File([state.photoBlob],`vigie-feu-${Date.now()}.jpg`,{type:'image/jpeg'});
-  try{
-    if(navigator.canShare?.({files:[file]})){await navigator.share({files:[file],title:'Vigie Feu'});return}
-  }catch(e){}
-  const a=document.createElement('a');a.href=state.photoUrl;a.download=file.name;a.click();
-}
-function clearPhoto(){
-  if(state.photoUrl)URL.revokeObjectURL(state.photoUrl);
-  state.photoBlob=null;state.photoUrl=null;$('cameraInput').value='';$('photoBox').style.display='none';
-}
-function buildMessage(){
-  return `🚨 MESSAGE SECOURS — VIGIE FEU 🚨
-1. POSITION : ${$('reportLocation').textContent}
-2. DIRECTION / MÉTÉO : ${$('reportDirection').textContent}
-3. URGENCES / CONTEXTE : ${$('reportThreats').textContent}
-⚠️ Données indicatives à confirmer oralement.`;
-}
-async function copyMessage(){
-  const msg=buildMessage();
-  try{await navigator.clipboard.writeText(msg);toast('Message copié')}
-  catch(e){
-    const ta=document.createElement('textarea');ta.value=msg;document.body.appendChild(ta);ta.select();
-    try{document.execCommand('copy');toast('Message copié')}catch(_){toast('Copie impossible')}
-    ta.remove();
-  }
-}
-
-renderOptions('optionsRoot',optionGroups);renderOptions('detailsRoot',tacticalGroups);
-$('refreshBtn').addEventListener('click',requestGPS);
-$('compassBtn').addEventListener('click',activateCompass);
-$('cameraInput').addEventListener('change',e=>e.target.files?.[0]&&drawPhoto(e.target.files[0]));
-$('sharePhotoBtn').addEventListener('click',sharePhoto);$('clearPhotoBtn').addEventListener('click',clearPhoto);
-$('copyBtn').async=false;
-$('copyBtn').addEventListener('click',copyMessage);$('copyBtn2').addEventListener('click',copyMessage);
-$('infoBtn').addEventListener('click',()=>$('infoModal').classList.add('open'));
-$('closeInfo').addEventListener('click',()=>$('infoModal').classList.remove('open'));
-$('infoModal').addEventListener('click',e=>{if(e.target===$('infoModal'))$('infoModal'].classList.remove('open')});
-
-if('serviceWorker' in navigator) window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
-requestGPS();
-</script>
-</body>
-</html>
+    $('address').textContent=state.address||'Sec
