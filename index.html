@@ -141,7 +141,7 @@
             text-decoration: none;
             border-radius: var(--radius);
             box-shadow: 0 10px 20px -5px rgba(22, 163, 74, 0.5);
-            margin-bottom: 24px;
+            margin-bottom: 16px;
             box-sizing: border-box;
             letter-spacing: 0.025em;
             transition: all 0.2s ease;
@@ -156,6 +156,38 @@
             0% { box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.4); }
             70% { box-shadow: 0 0 0 12px rgba(22, 163, 74, 0); }
             100% { box-shadow: 0 0 0 0 rgba(22, 163, 74, 0); }
+        }
+
+        .btn-sos {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            background: linear-gradient(135deg, #eab308 0%, #ca8a04 100%);
+            color: #0f172a;
+            text-align: center;
+            padding: 14px;
+            font-size: 1.1rem;
+            font-weight: 800;
+            border: none;
+            border-radius: var(--radius);
+            cursor: pointer;
+            margin-bottom: 24px;
+            box-sizing: border-box;
+            box-shadow: 0 6px 15px rgba(234, 179, 8, 0.3);
+            transition: all 0.2s ease;
+        }
+
+        .btn-sos.active {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+            animation: pulse-sos 1s infinite;
+        }
+
+        @keyframes pulse-sos {
+            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.6); }
+            70% { box-shadow: 0 0 0 12px rgba(239, 68, 68, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
         }
 
         .btn-action {
@@ -315,7 +347,6 @@
             overflow: hidden;
         }
 
-        /* Aiguille fixe au centre */
         .compass-needle {
             width: 4px;
             height: 110px;
@@ -349,7 +380,6 @@
             border-top: 55px solid #64748b;
         }
 
-        /* Cadran tournant fluide */
         .compass-labels {
             position: absolute;
             width: 100%;
@@ -360,7 +390,6 @@
             z-index: 1;
         }
 
-        /* Graduations sur le pourtour */
         .compass-tick {
             position: absolute;
             top: 4px;
@@ -412,6 +441,23 @@
         }
         #download-link:hover { text-decoration: underline; }
 
+        /* Style plein écran pour signal SOS visuel de secours si pas de flash */
+        #sos-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: white;
+            z-index: 9999;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            color: black;
+            font-weight: 900;
+            font-size: 2rem;
+            text-align: center;
+            padding: 20px;
+        }
+
         footer {
             text-align: center;
             margin-top: 30px;
@@ -426,6 +472,14 @@
     </style>
 </head>
 <body>
+
+    <!-- Overlay flash visuel de secours -->
+    <div id="sos-overlay" onclick="toggleSOS()">
+        <span style="font-size: 4rem; margin-bottom: 20px;">🚨</span>
+        SIGNAL SOS ACTIF<br>
+        <span style="font-size: 1rem; font-weight: normal; margin-top: 10px;">Touchez n'importe où pour éteindre</span>
+    </div>
+
     <header>
         <img src="favicon.png" alt="Logo Vigie-Feux" class="header-logo">
         <h1>Vigie-Feux</h1>
@@ -433,6 +487,7 @@
     </header>
 
     <a href="tel:112" class="btn-call">📞 APPELER LE 112 / 18</a>
+    <button id="btn-sos-toggle" class="btn-sos" onclick="toggleSOS()">🔦 Lampe Torche / Signal SOS Visuel</button>
 
     <!-- Menu dépliant d'information & Sécurité -->
     <div class="card">
@@ -462,9 +517,7 @@
         <h2>🧭 Orientation & Vent</h2>
         <div class="compass-container">
             <div class="compass-dial">
-                <!-- Cadran tournant avec graduations et points cardinaux/intermédiaires -->
                 <div id="compass-labels" class="compass-labels">
-                    <!-- Graduations tous les 30° -->
                     <div class="compass-tick major" style="transform: rotate(0deg);"></div>
                     <div class="compass-tick" style="transform: rotate(30deg);"></div>
                     <div class="compass-tick" style="transform: rotate(60deg);"></div>
@@ -478,7 +531,6 @@
                     <div class="compass-tick" style="transform: rotate(300deg);"></div>
                     <div class="compass-tick" style="transform: rotate(330deg);"></div>
 
-                    <!-- Points -->
                     <span class="c-n">N</span>
                     <span class="c-ne">NE</span>
                     <span class="c-e">E</span>
@@ -488,7 +540,6 @@
                     <span class="c-w">O</span>
                     <span class="c-nw">NO</span>
                 </div>
-                <!-- Aiguille fixe -->
                 <div id="compass-needle" class="compass-needle"></div>
             </div>
             <div id="compass-status" style="font-weight: 600; font-size: 0.95rem; margin-bottom: 4px;">Cap : En attente d'activation</div>
@@ -551,6 +602,102 @@
 <script>
     let lat = null; let lon = null; let addressStr = "Adresse non disponible"; let headingStr = "Non mesuré"; let processedImageBlob = null;
     let smoothedHeading = null;
+    
+    // Variables pour la gestion de la lampe torche / SOS
+    let sosActive = false;
+    let flashTrack = null;
+    let sosInterval = null;
+
+    async function toggleSOS() {
+        const btn = document.getElementById('btn-sos-toggle');
+        const overlay = document.getElementById('sos-overlay');
+
+        if (!sosActive) {
+            sosActive = true;
+            btn.classList.add('active');
+            btn.innerText = "🛑 ARRÊTER LE SIGNAL SOS";
+            overlay.style.display = 'flex';
+
+            // Tentative d'activation du flash matériel (Torch)
+            try {
+                if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                    const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+                    const track = stream.getVideoTracks()[0];
+                    const capabilities = track.getCapabilities();
+                    
+                    if (capabilities.torch) {
+                        flashTrack = track;
+                        // Séquence SOS en morse (3 courts, 3 longs, 3 courts) via le flash matériel
+                        runTorchSOS(flashTrack);
+                        return;
+                    }
+                }
+            } catch (e) {
+                console.warn("Flash matériel non accessible, utilisation du mode écran lumineux.", e);
+            }
+
+            // Mode de repli : Clignotement de l'écran blanc (Strobe visuel)
+            let isWhite = true;
+            sosInterval = setInterval(() => {
+                overlay.style.background = isWhite ? '#ffffff' : '#000000';
+                overlay.style.color = isWhite ? '#000000' : '#ffffff';
+                isWhite = !isWhite;
+            }, 300);
+
+        } else {
+            stopSOS();
+        }
+    }
+
+    function stopSOS() {
+        sosActive = false;
+        const btn = document.getElementById('btn-sos-toggle');
+        const overlay = document.getElementById('sos-overlay');
+        
+        btn.classList.remove('active');
+        btn.innerText = "🔦 Lampe Torche / Signal SOS Visuel";
+        overlay.style.display = 'none';
+
+        if (flashTrack) {
+            try {
+                flashTrack.applyConstraints({ advanced: [{ torch: false }] });
+                flashTrack.stop();
+            } catch (e) {}
+            flashTrack = null;
+        }
+
+        if (sosInterval) {
+            clearInterval(sosInterval);
+            sosInterval = null;
+        }
+    }
+
+    // Gestion de la cadence SOS en morse pour le flash
+    async function runTorchSOS(track) {
+        const dot = 200;
+        const dash = 600;
+        const pause = 200;
+
+        async function pulse(duration) {
+            if (!sosActive) return;
+            try { await track.applyConstraints({ advanced: [{ torch: true }] }); } catch(e){}
+            await new Promise(r => setTimeout(r, duration));
+            try { await track.applyConstraints({ advanced: [{ torch: false }] }); } catch(e){}
+            await new Promise(r => setTimeout(r, pause));
+        }
+
+        while (sosActive) {
+            // S (3 points)
+            for(let i=0; i<3; i++) { if(!sosActive) break; await pulse(dot); }
+            await new Promise(r => setTimeout(r, 400));
+            // O (3 traits)
+            for(let i=0; i<3; i++) { if(!sosActive) break; await pulse(dash); }
+            await new Promise(r => setTimeout(r, 400));
+            // S (3 points)
+            for(let i=0; i<3; i++) { if(!sosActive) break; await pulse(dot); }
+            await new Promise(r => setTimeout(r, 1200)); // Pause avant de répéter
+        }
+    }
 
     function initGeo() {
         document.getElementById('geo-status').innerHTML = "⏳ Acquisition du signal GPS...";
