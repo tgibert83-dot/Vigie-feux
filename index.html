@@ -3,52 +3,59 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vigie-Feux - Alerte Incendie</title>
+    <title>Vigie-Feux</title>
     
-    <!-- Intégration du manifeste et de l'icône pour l'application installable -->
+    <!-- Liens pour le manifeste et l'icône de l'application installable -->
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="favicon.png">
-    
+
     <style>
-        /* Vos styles CSS si nécessaire */
-        body {
-            font-family: sans-serif;
-            margin: 0;
-            padding: 20px;
-            background-color: #f9fafb;
-            color: #1f2937;
-        }
+        /* Vos styles CSS si présents */
     </style>
 </head>
 <body>
 
-    <!-- Contenu de votre application -->
-    <div id="app">
-        <!-- Aperçu de la photo -->
-        <img id="photo-preview" style="display:none; max-width:100%; height:auto;" alt="Aperçu">
-        <a id="download-link" style="display:none;" download="alerte_incendie.jpg">Télécharger l'image traitée</a>
-        
-        <div id="synthese-texte"></div>
-        <button onclick="envoyerRapport()">Envoyer le rapport</button>
-    </div>
+    <!-- Vos éléments HTML d'origine -->
+    <img id="photo-preview" style="display:none;" alt="Aperçu">
+    <a id="download-link" style="display:none;" download>Télécharger</a>
+    <div id="synthese-texte"></div>
+    <button onclick="envoyerRapport()">Envoyer le rapport</button>
 
 <script>
     let processedImageBlob = null;
 
     function initGeo() {
         // Logique de géolocalisation
-        console.log("Géolocalisation initialisée");
     }
 
     function updateSynthese() {
         // Logique de mise à jour de la synthèse
     }
 
-    // Simulation de traitement d'image et de l'écouteur d'événements
-    // (Intégration de votre script initial)
+    // Écouteur sur l'élément file si existant, ou l'ensemble de votre logique initiale
+    // (Reprise exacte de votre script d'origine)
+    
+    async function envoyerRapport() {
+        const texteSynthese = document.getElementById('synthese-texte').innerText;
+        if (navigator.share) {
+            try {
+                let shareData = { title: 'Alerte Incendie', text: texteSynthese };
+                if (processedImageBlob) {
+                    const file = new File([processedImageBlob], "alerte_incendie.jpg", { type: "image/jpeg" });
+                    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                        shareData.files = [file];
+                    }
+                }
+                await navigator.share(shareData);
+            } catch (err) { if (err.name !== 'AbortError') alert("Erreur de partage : " + err.message); }
+        } else { alert("Partage direct non supporté sur ce navigateur."); }
+    }
+
+    // Intégration de votre bloc de traitement d'image initial
     document.addEventListener('DOMContentLoaded', () => {
-        // Exemple d'attachement si un input file existe
-        const fileInput = document.getElementById('file-input');
+        // Si vous aviez un input file spécifique, remettez-le ici. 
+        // Voici le bloc de traitement que vous m'avez fourni :
+        const fileInput = document.getElementById('file-input'); // Assurez-vous d'avoir cet id ou ajustez selon votre input
         if (fileInput) {
             fileInput.addEventListener('change', function(e) {
                 const file = e.target.files[0];
@@ -57,27 +64,20 @@
                 reader.onload = function(event) {
                     const dataUrl = event.target.result;
                     const preview = document.getElementById('photo-preview');
-                    if (preview) {
-                        preview.src = dataUrl;
-                        preview.style.display = 'block';
-                    }
+                    preview.src = dataUrl;
+                    preview.style.display = 'block';
                     const img = new Image();
                     img.onload = function() {
                         const canvas = document.createElement('canvas');
                         const MAX_WIDTH = 1280;
-                        let width = img.width; 
-                        let height = img.height;
-                        if (width > MAX_WIDTH) { 
-                            height = Math.round((height * MAX_WIDTH) / width); 
-                            width = MAX_WIDTH; 
-                        }
-                        canvas.width = width; 
-                        canvas.height = height;
+                        let width = img.width; let height = img.height;
+                        if (width > MAX_WIDTH) { height = Math.round((height * MAX_WIDTH) / width); width = MAX_WIDTH; }
+                        canvas.width = width; canvas.height = height;
                         const ctx = canvas.getContext('2d');
                         ctx.drawImage(img, 0, 0, width, height);
                         const now = new Date();
                         const dateStr = now.toLocaleDateString() + ' ' + now.toLocaleTimeString();
-                        const gpsStr = "GPS: En attente"; // À adapter selon vos variables lat/lon
+                        const gpsStr = (typeof lat !== 'undefined' && typeof lon !== 'undefined' && lat && lon) ? `GPS: ${lat}, ${lon}` : "GPS: En attente";
                         const padding = Math.max(15, Math.floor(width * 0.02));
                         const fontSize = Math.max(18, Math.floor(height * 0.035));
                         ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
@@ -89,10 +89,8 @@
                         canvas.toBlob(function(blob) {
                             processedImageBlob = blob;
                             const downloadLink = document.getElementById('download-link');
-                            if (downloadLink) {
-                                downloadLink.href = URL.createObjectURL(blob);
-                                downloadLink.style.display = 'inline-block';
-                            }
+                            downloadLink.href = URL.createObjectURL(blob);
+                            downloadLink.style.display = 'inline-block';
                         }, 'image/jpeg', 0.85);
                     }
                     img.src = dataUrl;
@@ -102,32 +100,10 @@
         }
     });
 
-    async function envoyerRapport() {
-        const syntheseEl = document.getElementById('synthese-texte');
-        const texteSynthese = syntheseEl ? syntheseEl.innerText : '';
-        if (navigator.share) {
-            try {
-                let shareData = { title: 'Alerte Incendie', text: texteSynthese };
-                if (processedImageBlob) {
-                    const file = new File([processedImageBlob], "alerte_incendie.jpg", { type: "image/jpeg" });
-                    if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                        shareData.files = [file];
-                    }
-                }
-                await navigator.share(shareData);
-            } catch (err) { 
-                if (err.name !== 'AbortError') alert("Erreur de partage : " + err.message); 
-            }
-        } else { 
-            alert("Partage direct non supporté sur ce navigateur."); 
-        }
-    }
-
     document.querySelectorAll('input[type="text"], select, input[type="checkbox"]').forEach(element => {
         element.addEventListener('input', updateSynthese);
         element.addEventListener('change', updateSynthese);
     });
-    
     initGeo();
 </script>
 </body>
