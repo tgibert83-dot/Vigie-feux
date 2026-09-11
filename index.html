@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vigie-Feux</title>
     <meta name="theme-color" content="#b91c1c">
+    <meta name="author" content="Tristan Gibert">
     
     <!-- Intégration du manifeste et de l'icône pour l'application installable -->
     <link rel="manifest" href="manifest.json">
@@ -238,6 +239,17 @@
             line-height: 1.4;
         }
 
+        .safety-box {
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid rgba(239, 68, 68, 0.4);
+            padding: 14px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            margin-bottom: 12px;
+            color: #fca5a5;
+            line-height: 1.5;
+        }
+
         .summary-box {
             background: rgba(15, 23, 42, 0.8);
             border: 1px solid rgba(239, 68, 68, 0.3);
@@ -276,7 +288,7 @@
             height: 110px;
             background: transparent;
             position: absolute;
-            transition: transform 0.3s ease-out; /* Adouci pour éviter les soubresauts */
+            transition: transform 0.3s ease-out;
         }
 
         .compass-needle::before {
@@ -344,6 +356,18 @@
             font-weight: 500;
         }
         #download-link:hover { text-decoration: underline; }
+
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+        footer a {
+            color: #60a5fa;
+            text-decoration: none;
+        }
     </style>
 </head>
 <body>
@@ -356,7 +380,17 @@
     <a href="tel:112" class="btn-call">📞 APPELER LE 112 / 18</a>
 
     <div class="card">
-        <h2>📍 Localisation</h2>
+        <h2>ℹ️ À propos & Consignes de Sécurité</h2>
+        <div class="safety-box">
+            <b>⚠️ Règle d'or :</b> Votre premier réflexe absolu est de <b>vous mettre à l'abri et de ne jamais vous mettre en danger</b>. N'essayez pas de combattre un feu par vos propres moyens si votre sécurité est menacée.
+        </div>
+        <div class="info-box">
+            <b>À quoi sert cette application ?</b> Vigie-Feux vous permet de compiler rapidement un rapport d'alerte précis (adresse, géolocalisation GPS, orientation, vent automatique, photos horodatées et état de la situation) pour le transmettre instantanément aux secours ou à vos proches.
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>📍 Localisation & Adresse</h2>
         <div id="geo-status" class="info-box">Recherche de la position GPS précise en cours...</div>
         <div id="geo-details" style="font-size: 0.9rem; margin-bottom: 14px; color: var(--text-muted);"></div>
         <button class="btn-action btn-secondary" onclick="initGeo()">🔄 Rafraîchir le GPS</button>
@@ -365,7 +399,7 @@
     </div>
 
     <div class="card">
-        <h2>🧭 Orientation & Vent</h2>
+        <h2>🧭 Orientation & 🌬️ Vent</h2>
         <div class="compass-container">
             <div class="compass-dial">
                 <div class="compass-labels">
@@ -380,7 +414,7 @@
             <div style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 12px;">Astuce : faites un mouvement en 8 avec le téléphone.</div>
             <button class="btn-action btn-secondary" onclick="initCompass()" style="max-width: 200px; margin: 0 auto;">Activer la boussole</button>
         </div>
-        <label for="vent-manuel" style="margin-top: 15px;">Force et direction du vent :</label>
+        <label for="vent-manuel" style="margin-top: 15px;">🌬️ Force et direction du vent (Manche à air) :</label>
         <input type="text" id="vent-manuel" value="Récupération météo en cours..." placeholder="Ex: Vent d'Ouest, 30 km/h...">
     </div>
 
@@ -419,9 +453,14 @@
         <button class="btn-action btn-share" onclick="envoyerRapport()">📤 Envoyer Message + Photo</button>
     </div>
 
+    <footer>
+        <p>© 2026 Tristan Gibert — Vigie-Feux — Tous droits réservés<br>
+        Contact : <a href="mailto:tristangibert@yahoo.fr">tristangibert@yahoo.fr</a></p>
+    </footer>
+
 <script>
-    let lat = null; let lon = null; let headingStr = "Non mesuré"; let processedImageBlob = null;
-    let smoothedHeading = null; // Variable pour stocker le cap lissé
+    let lat = null; let lon = null; let addressStr = "Adresse non disponible"; let headingStr = "Non mesuré"; let processedImageBlob = null;
+    let smoothedHeading = null;
 
     function initGeo() {
         document.getElementById('geo-status').innerHTML = "⏳ Acquisition du signal GPS...";
@@ -432,8 +471,8 @@
                     lon = position.coords.longitude.toFixed(6);
                     const accuracy = Math.round(position.coords.accuracy);
                     document.getElementById('geo-status').innerHTML = `✅ Position GPS verrouillée (~${accuracy}m)`;
-                    document.getElementById('geo-details').innerHTML = `<b>GPS :</b> ${lat}, ${lon} <br><a href="https://maps.google.com/?q=${lat},${lon}" target="_blank" style="color:#60a5fa; font-weight:500;">Ouvrir sur la carte</a>`;
                     
+                    fetchAddress(lat, lon);
                     fetchMeteo(lat, lon);
                     updateSynthese();
                 },
@@ -441,6 +480,26 @@
                 { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
             );
         } else { document.getElementById('geo-status').innerHTML = "❌ Géolocalisation non supportée."; updateSynthese(); }
+    }
+
+    async function fetchAddress(latitude, longitude) {
+        try {
+            const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=18&addressdetails=1`, {
+                headers: { 'Accept-Language': 'fr' }
+            });
+            const data = await response.json();
+            if (data && data.display_name) {
+                addressStr = data.display_name;
+                document.getElementById('geo-details').innerHTML = `<b>Adresse :</b> ${addressStr}<br><b>GPS :</b> ${lat}, ${lon} <br><a href="https://maps.google.com/?q=${lat},${lon}" target="_blank" style="color:#60a5fa; font-weight:500;">Ouvrir sur la carte</a>`;
+            } else {
+                document.getElementById('geo-details').innerHTML = `<b>GPS :</b> ${lat}, ${lon} <br><a href="https://maps.google.com/?q=${lat},${lon}" target="_blank" style="color:#60a5fa; font-weight:500;">Ouvrir sur la carte</a>`;
+            }
+            updateSynthese();
+        } catch (e) {
+            console.warn("Erreur géocodage inverse : ", e);
+            document.getElementById('geo-details').innerHTML = `<b>GPS :</b> ${lat}, ${lon} <br><a href="https://maps.google.com/?q=${lat},${lon}" target="_blank" style="color:#60a5fa; font-weight:500;">Ouvrir sur la carte</a>`;
+            updateSynthese();
+        }
     }
 
     async function fetchMeteo(latitude, longitude) {
@@ -478,15 +537,13 @@
             else if (event.alpha !== null) { heading = event.absolute ? event.alpha : (360 - event.alpha); }
             
             if (heading !== null) {
-                // Application d'un filtre de lissage (moyenne mobile pour atténuer la sensibilité excessive)
                 if (smoothedHeading === null) {
                     smoothedHeading = heading;
                 } else {
-                    // Gestion du passage de 360° à 0° pour éviter les sauts brusques
                     let diff = heading - smoothedHeading;
                     if (diff > 180) diff -= 360;
                     if (diff < -180) diff += 360;
-                    smoothedHeading += diff * 0.15; // Facteur de lissage (plus il est bas, plus c'est stable)
+                    smoothedHeading += diff * 0.15;
                     if (smoothedHeading < 0) smoothedHeading += 360;
                     if (smoothedHeading >= 360) smoothedHeading -= 360;
                 }
@@ -518,8 +575,10 @@
         const reseaux = document.getElementById('reseaux').checked ? "OUI" : "Non";
         const flammes = document.getElementById('hauteur-flammes').value;
         const coordsText = (lat && lon) ? `${lat}, ${lon}` : "En attente du GPS...";
+        const addrText = addressStr !== "Adresse non disponible" ? addressStr : "Recherche d'adresse...";
 
         const texte = `ALERTE INCENDIE :
+- Adresse : ${addrText}
 - GPS : ${coordsText}
 - Accès : ${chemin}
 - Mon Cap : ${headingStr}
