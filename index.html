@@ -315,7 +315,7 @@
             overflow: hidden;
         }
 
-        /* L'aiguille est maintenant fixe au centre, pointant vers le haut (Nord fixe) */
+        /* Aiguille fixe au centre */
         .compass-needle {
             width: 4px;
             height: 110px;
@@ -349,7 +349,7 @@
             border-top: 55px solid #64748b;
         }
 
-        /* Le cadran/les lettres tournent désormais selon l'orientation */
+        /* Cadran tournant (sans transition CSS pour éviter les saccades/conflits) */
         .compass-labels {
             position: absolute;
             width: 100%;
@@ -357,14 +357,17 @@
             font-weight: bold;
             font-size: 0.8rem;
             color: var(--text-muted);
-            transition: transform 0.3s ease-out;
             z-index: 1;
         }
 
         .c-n { position: absolute; top: 6px; left: calc(50% - 4px); color: #ef4444; font-weight: 900; }
-        .c-s { position: absolute; bottom: 6px; left: calc(50% - 4px); }
+        .c-ne { position: absolute; top: 18px; right: 18px; font-size: 0.65rem; color: var(--text-muted); }
         .c-e { position: absolute; right: 10px; top: calc(50% - 10px); }
+        .c-se { position: absolute; bottom: 18px; right: 18px; font-size: 0.65rem; color: var(--text-muted); }
+        .c-s { position: absolute; bottom: 6px; left: calc(50% - 4px); }
+        .c-sw { position: absolute; bottom: 18px; left: 18px; font-size: 0.65rem; color: var(--text-muted); }
         .c-w { position: absolute; left: 10px; top: calc(50% - 10px); }
+        .c-nw { position: absolute; top: 18px; left: 18px; font-size: 0.65rem; color: var(--text-muted); }
 
         #photo-input { display: none; }
 
@@ -443,14 +446,18 @@
         <h2>🧭 Orientation & Vent</h2>
         <div class="compass-container">
             <div class="compass-dial">
-                <!-- Le cadran et les lettres pivotent désormais -->
+                <!-- Cadran gradué enrichi (N, NE, E, SE, S, SW, O, NW) -->
                 <div id="compass-labels" class="compass-labels">
                     <span class="c-n">N</span>
+                    <span class="c-ne">NE</span>
                     <span class="c-e">E</span>
+                    <span class="c-se">SE</span>
                     <span class="c-s">S</span>
+                    <span class="c-sw">SO</span>
                     <span class="c-w">O</span>
+                    <span class="c-nw">NO</span>
                 </div>
-                <!-- L'aiguille reste fixe pointée vers le haut -->
+                <!-- Aiguille fixe -->
                 <div id="compass-needle" class="compass-needle"></div>
             </div>
             <div id="compass-status" style="font-weight: 600; font-size: 0.95rem; margin-bottom: 4px;">Cap : En attente d'activation</div>
@@ -595,7 +602,10 @@
                     let diff = heading - smoothedHeading;
                     if (diff > 180) diff -= 360;
                     if (diff < -180) diff += 360;
-                    smoothedHeading += diff * 0.15;
+                    
+                    // Amorti plus bas (0.08) pour éliminer les à-coups et assurer une grande fluidité
+                    smoothedHeading += diff * 0.08;
+                    
                     if (smoothedHeading < 0) smoothedHeading += 360;
                     if (smoothedHeading >= 360) smoothedHeading -= 360;
                 }
@@ -604,8 +614,6 @@
                 headingStr = `${getCardinalDirection(rounded)} (${rounded}°)`;
                 document.getElementById('compass-status').innerHTML = `Cap actuel : <b>${headingStr}</b>`;
                 
-                // On fait tourner le cadran (les lettres N, E, S, O) dans le sens inverse (-rounded) 
-                // pour que l'aiguille reste fixe vers le haut (le Nord)
                 const labels = document.getElementById('compass-labels');
                 if (labels) labels.style.transform = `rotate(${-rounded}deg)`;
 
