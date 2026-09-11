@@ -1,264 +1,527 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alerte Incendie - Assistance Pompiers</title>
-    <meta name="theme-color" content="#dc2626">
-    <style>
-        :root {
-            --primary: #dc2626;
-            --bg: #f9fafb;
-            --card-bg: #ffffff;
-            --text: #1f2937;
-            --border: #e5e7eb;
-        }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--bg);
-            color: var(--text);
-            margin: 0;
-            padding: 16px;
-            padding-bottom: 80px;
-        }
-        header { text-align: center; margin-bottom: 20px; }
-        h1 { color: var(--primary); font-size: 1.5rem; margin-bottom: 4px; }
-        .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin-bottom: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-        h2 { font-size: 1.1rem; margin-top: 0; color: #374151; border-bottom: 2px solid var(--primary); padding-bottom: 6px; }
-        .btn-call { display: block; width: 100%; background-color: #16a34a; color: white; text-align: center; padding: 16px; font-size: 1.25rem; font-weight: bold; text-decoration: none; border-radius: 12px; box-shadow: 0 4px 6px rgba(22, 163, 74, 0.3); margin-bottom: 10px; box-sizing: border-box; }
-        .btn-action { display: block; width: 100%; background-color: #2563eb; color: white; text-align: center; padding: 12px; font-size: 1rem; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; margin-bottom: 10px; box-sizing: border-box; }
-        .btn-secondary { background-color: #4b5563; padding: 8px; font-size: 0.85rem; margin-top: 8px; }
-        .btn-share { background-color: #9333ea; }
-        label { display: block; margin-bottom: 8px; font-weight: 500; }
-        select, input[type="text"] { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 8px; font-size: 1rem; margin-bottom: 12px; box-sizing: border-box; }
-        .checkbox-group { display: grid; grid-template-columns: 1fr; gap: 10px; }
-        .checkbox-label { display: flex; align-items: center; background: #f3f4f6; padding: 10px; border-radius: 8px; cursor: pointer; font-size: 0.95rem; }
-        .checkbox-label input { margin-right: 12px; transform: scale(1.2); }
-        .info-box { background: #eff6ff; border: 1px solid #bfdbfe; padding: 10px; border-radius: 8px; font-size: 0.9rem; margin-bottom: 10px; }
-        .summary-box { background: #fef2f2; border: 1px solid #fecaca; padding: 12px; border-radius: 8px; font-family: monospace; font-size: 0.9rem; white-space: pre-wrap; word-break: break-word; margin-bottom: 12px; }
-        .compass-container { text-align: center; margin: 15px 0; }
-        .compass-dial { width: 140px; height: 140px; border: 4px solid #374151; border-radius: 50%; margin: 0 auto 10px auto; position: relative; background: radial-gradient(circle, #ffffff 60%, #f3f4f6 100%); display: flex; align-items: center; justify-content: center; box-shadow: inset 0 2px 4px rgba(0,0,0,0.1); }
-        .compass-needle { width: 4px; height: 100px; background: transparent; position: absolute; transition: transform 0.1s ease-out; }
-        .compass-needle::before { content: ''; position: absolute; top: 0; left: 0; width: 0; height: 0; border-left: 6px solid transparent; border-right: 6px solid transparent; border-bottom: 50px solid #dc2626; }
-        .compass-needle::after { content: ''; position: absolute; bottom: 0; left: 0; width: 0; height: 0; border-left: 6px solid transparent; border-right: 6px solid transparent; border-top: 50px solid #4b5563; }
-        .compass-labels { position: absolute; width: 100%; height: 100%; font-weight: bold; font-size: 0.8rem; color: #4b5563; }
-        .c-n { position: absolute; top: 2px; left: calc(50% - 4px); color: #dc2626; }
-        .c-s { position: absolute; bottom: 2px; left: calc(50% - 4px); }
-        .c-e { position: absolute; right: 6px; top: calc(50% - 10px); }
-        .c-w { position: absolute; left: 6px; top: calc(50% - 10px); }
-        #photo-input { display: none; }
-        .preview-container { text-align: center; margin-top: 10px; }
-        #photo-preview { max-width: 100%; max-height: 250px; border-radius: 8px; border: 1px solid var(--border); display: none; margin: 10px auto; }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+  <meta name="theme-color" content="#020617">
+  <meta name="description" content="Vigie Feu — assistance citoyenne à la localisation et à la transmission d'informations lors d'un départ de feu.">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>Vigie Feu — V2</title>
+  <link rel="manifest" href="./manifest.webmanifest">
+  <style>
+    :root{
+      color-scheme:dark;
+      --bg:#020617;--panel:#0f172a;--panel2:#090f1c;--line:#1e293b;
+      --text:#f8fafc;--muted:#94a3b8;--indigo:#818cf8;--green:#34d399;
+      --amber:#fbbf24;--rose:#fb7185;--red:#ef4444;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;background:radial-gradient(circle at top,#111827 0,#020617 42%);color:var(--text);
+      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;min-height:100vh}
+    button,a,input{font:inherit}
+    button,a{touch-action:manipulation}
+    button{cursor:pointer}
+    .wrap{width:min(100% - 24px,480px);margin:auto;padding:18px 0 40px}
+    .top{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:12px}
+    .pill{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:#fda4af;background:#4c0519;
+      border:1px solid #881337;border-radius:999px;padding:7px 10px}
+    .btn{border:1px solid var(--line);background:#0b1220;color:#cbd5e1;border-radius:12px;padding:8px 11px;font-size:11px;font-weight:700}
+    .brand{display:flex;gap:13px;align-items:center;background:linear-gradient(90deg,#0f172a,#0b122080);border:1px solid var(--line);
+      border-radius:22px;padding:14px;box-shadow:0 14px 35px #0005}
+    .logo{width:52px;height:52px;border-radius:17px;background:linear-gradient(135deg,#4c0519,#312e81);display:grid;place-items:center;border:1px solid #475569}
+    .logo svg{width:34px}
+    h1{font-size:25px;margin:0;font-weight:900;letter-spacing:-.04em}
+    .sub{font-size:11px;color:var(--muted);margin-top:4px}
+    section{background:#0f172af0;border:1px solid #1e293bcc;border-radius:25px;padding:17px;margin-top:14px;box-shadow:0 14px 30px #0005}
+    .section-title{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+    .eyebrow{font-size:10px;text-transform:uppercase;letter-spacing:.09em;font-weight:900;color:#94a3b8}
+    .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .card{background:#020617cc;border:1px solid #1e293b;border-radius:18px;padding:13px}
+    .big{font-size:18px;font-weight:900}
+    .mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+    .small{font-size:11px;color:#cbd5e1}
+    .muted{color:var(--muted)}
+    .status{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:800;border-radius:8px;padding:5px 7px}
+    .ok{color:#6ee7b7;background:#052e1c;border:1px solid #065f46}
+    .warn{color:#fcd34d;background:#451a03;border:1px solid #78350f}
+    .bad{color:#fda4af;background:#4c0519;border:1px solid #881337}
+    .compass{height:150px;display:grid;place-items:center}
+    .dial{width:118px;height:118px;border:2px dashed #475569;border-radius:50%;position:relative;display:grid;place-items:center;transition:transform .12s linear}
+    .dial span{position:absolute;font-size:10px;font-weight:900}.n{top:5px;color:#fb7185}.s{bottom:5px}.e{right:7px}.w{left:7px}
+    .needle{width:4px;height:50px;border-radius:99px;background:linear-gradient(#fb7185 0 48%,transparent 48%);transform:translateY(-1px)}
+    .compass-read{text-align:center;font-size:12px;font-weight:800}
+    .kv{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid #111827;font-size:11px}
+    .kv:last-child{border-bottom:0}
+    .notice{border-radius:16px;padding:11px;font-size:11px;line-height:1.4;margin-top:10px}
+    .notice.danger{background:#450a0a;border:1px solid #991b1b;color:#fecaca}
+    .notice.info{background:#172554;border:1px solid #3730a3;color:#c7d2fe}
+    .danger-mode{display:none}
+    .danger-mode.active{display:block}
+    .location-value{font-size:12px;font-weight:800;margin-top:4px;line-height:1.35}
+    .actions{display:flex;gap:8px;margin-top:10px}.actions>*{flex:1}
+    .photo-label{display:flex;justify-content:center;align-items:center;gap:8px;border:1px dashed #475569;background:#02061799;border-radius:17px;padding:13px;font-size:11px;font-weight:800;color:#cbd5e1}
+    input[type=file]{display:none}
+    #photoBox{display:none;margin-top:10px}.photo{width:100%;border-radius:15px;border:1px solid #334155;display:block}
+    .opt-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+    .opt{width:100%;text-align:left;border:1px solid #1e293b;background:#020617cc;color:#e2e8f0;border-radius:15px;padding:10px;font-size:11px;display:flex;justify-content:space-between;gap:7px}
+    .opt.selected{border-color:#f43f5e;background:#4c051966;color:#fecdd3}
+    .dot{width:7px;height:7px;border-radius:50%;background:#334155;flex:none;margin-top:3px}.selected .dot{background:#fb7185}
+    details{background:#02061799;border:1px solid #1e293b;border-radius:17px;margin-top:12px}
+    summary{padding:12px;cursor:pointer;font-size:11px;font-weight:900;list-style:none}
+    .details-body{padding:0 12px 12px}
+    .report{background:#020617cc;border:1px solid #1e293b;border-radius:17px;padding:12px;margin-top:8px}
+    .report p{margin:5px 0;font-size:11px;line-height:1.45}
+    .report .label{font-size:9px;color:#64748b;font-weight:900;letter-spacing:.08em}
+    .call-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+    .call{display:flex;align-items:center;justify-content:center;text-decoration:none;border-radius:17px;padding:15px 10px;font-weight:950;color:#fff}
+    .call18{background:linear-gradient(135deg,#e11d48,#dc2626)}.call112{background:linear-gradient(135deg,#b91c1c,#991b1b)}
+    .footer{text-align:center;color:#64748b;font-size:10px;border-top:1px solid #0f172a;margin-top:20px;padding-top:17px;line-height:1.6}
+    .modal{position:fixed;inset:0;background:#000b;backdrop-filter:blur(10px);display:none;align-items:center;justify-content:center;padding:18px;z-index:20}
+    .modal.open{display:flex}.modal-card{width:min(100%,420px);background:#0f172a;border:1px solid #334155;border-radius:24px;padding:20px}
+    .close{float:right}
+    .toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:#111827;border:1px solid #334155;color:#f8fafc;border-radius:999px;padding:10px 14px;font-size:11px;font-weight:800;display:none;z-index:30}
+    .toast.show{display:block}
+    @media(max-width:360px){.grid2,.opt-grid,.call-grid{grid-template-columns:1fr}.wrap{width:min(100% - 18px,480px)}}
+  </style>
 </head>
 <body>
-    <header>
-        <h1>🚨 Alerte Incendie Express</h1>
-        <p style="margin:0; font-size:0.9rem; color:#6b7280;">Secours & Assistance Terrain</p>
-    </header>
+<div class="wrap">
+  <div class="top">
+    <div class="pill">🚨 Assistance départ d'incendie</div>
+    <button class="btn" id="infoBtn">Infos ℹ️</button>
+  </div>
 
-    <a href="tel:112" class="btn-call">📞 APPELER LE 112 / 18</a>
-
-    <div class="card">
-        <h2>📍 Localisation</h2>
-        <div id="geo-status" class="info-box">Recherche de la position GPS précise en cours...</div>
-        <div id="geo-details" style="font-size: 0.9rem; margin-bottom: 10px;"></div>
-        <button class="btn-action btn-secondary" onclick="initGeo()">🔄 Rafraîchir le GPS</button>
-        <label for="chemin-carrossable" style="margin-top:10px;">Précision chemin / accès :</label>
-        <input type="text" id="chemin-carrossable" placeholder="Ex: Chemin forestier accessible aux 4x4, barrière ouverte...">
+  <header class="brand">
+    <div class="logo" aria-hidden="true">
+      <svg viewBox="0 0 64 64" fill="none">
+        <circle cx="32" cy="32" r="26" stroke="#a5b4fc" stroke-width="4"/>
+        <path d="M32 8v48M8 32h48" stroke="#64748b" stroke-width="2"/>
+        <path d="M32 13l8 24-8-4-8 4 8-24z" fill="#fb7185"/>
+      </svg>
     </div>
+    <div>
+      <h1>Vigie Feu 🧭</h1>
+      <div class="sub">Position, cap de visée, météo estimée et bilan de situation.</div>
+    </div>
+  </header>
 
-    <div class="card">
-        <h2>🧭 Orientation & Vent</h2>
-        <div class="compass-container">
-            <div class="compass-dial">
-                <div class="compass-labels">
-                    <span class="c-n">N</span>
-                    <span class="c-e">E</span>
-                    <span class="c-s">S</span>
-                    <span class="c-w">O</span>
-                </div>
-                <div id="compass-needle" class="compass-needle"></div>
-            </div>
-            <div id="compass-status" style="font-weight: 600; font-size: 0.95rem; margin-bottom: 4px;">Cap : En attente d'activation</div>
-            <div style="font-size: 0.75rem; color: #6b7280; margin-bottom: 8px;">Astuce : faites un mouvement en 8 avec le téléphone.</div>
-            <button class="btn-action btn-secondary" onclick="initCompass()" style="max-width: 200px; margin: 0 auto;">Activer la boussole</button>
+  <div id="dangerMode" class="notice danger danger-mode">
+    <strong>⚠️ VOUS ÊTES EN DANGER.</strong><br>
+    Éloignez-vous du feu et appelez immédiatement les secours. Ne vous approchez pas pour obtenir une meilleure photo ou mesure.
+  </div>
+
+  <section>
+    <div class="section-title">
+      <span class="eyebrow">🧭 Cap & orientation</span>
+      <button class="btn" id="compassBtn">Activer</button>
+    </div>
+    <div class="grid2">
+      <div class="card">
+        <div class="compass">
+          <div id="dial" class="dial">
+            <span class="n">N</span><span class="s">S</span><span class="e">E</span><span class="w">O</span>
+            <div class="needle"></div>
+          </div>
         </div>
-        <label for="vent-manuel" style="margin-top: 15px;">Force et direction du vent :</label>
-        <input type="text" id="vent-manuel" value="Vent faible, direction variable" placeholder="Ex: Vent fort d'Ouest, 30 km/h...">
+        <div id="heading" class="compass-read">Cap téléphone : --°</div>
+        <div id="headingStatus" class="muted" style="text-align:center;font-size:10px;margin-top:4px">Non activé</div>
+      </div>
+      <div class="card">
+        <div class="eyebrow">Direction de visée</div>
+        <div id="aim" class="big mono" style="margin-top:7px">--°</div>
+        <div id="aimCardinal" class="small" style="margin-top:3px">Orientez le téléphone vers le feu.</div>
+        <div class="notice info">Le cap indique l'orientation du téléphone. Il ne mesure pas la propagation du feu.</div>
+      </div>
     </div>
+  </section>
 
-    <div class="card">
-        <h2>🔥 Situation sur place</h2>
-        <div class="checkbox-group">
-            <label class="checkbox-label"><input type="checkbox" id="blesses"> ⚠️ Présence de blessé(s)</label>
-            <label class="checkbox-label"><input type="checkbox" id="voitures"> 🚗 Véhicules bloqués / en danger</label>
-            <label class="checkbox-label"><input type="checkbox" id="animaux"> 🐾 Animaux en danger</label>
-            <label class="checkbox-label"><input type="checkbox" id="reseaux"> ⚡ Risque électrique ou gaz (lignes, coffrets)</label>
-        </div>
-        <label for="hauteur-flammes" style="margin-top:12px;">Hauteur estimée des flammes :</label>
-        <select id="hauteur-flammes">
-            <option value="Herbes / Broussailles basses (< 1m)">Herbes / Broussailles basses (&lt; 1m)</option>
-            <option value="À hauteur d'homme / Arbustes (1 à 3m)">À hauteur d'homme / Arbustes (1 à 3m)</option>
-            <option value="La cime des arbres / Forêt (> 3m)">La cime des arbres / Forêt (&gt; 3m)</option>
-            <option value="Immenses / Menace des habitations">Immenses / Menace directe des habitations</option>
-        </select>
+  <section>
+    <div class="section-title">
+      <span class="eyebrow">📍 Position GPS</span>
+      <span id="gpsStatus" class="status warn">GPS en attente</span>
     </div>
+    <div class="card">
+      <div class="kv"><span class="muted">Coordonnées</span><strong id="coords" class="mono">--.------, --.------</strong></div>
+      <div class="kv"><span class="muted">Précision annoncée</span><strong id="accuracy">--</strong></div>
+      <div class="kv"><span class="muted">Format radio</span><strong id="dms" class="mono">--</strong></div>
+      <div class="kv"><span class="muted">Commune</span><strong id="city">En cours…</strong></div>
+      <div class="kv"><span class="muted">Lieu / voie</span><strong id="address">En cours…</strong></div>
+    </div>
+    <div class="actions">
+      <button class="btn" id="refreshBtn">🔄 Actualiser GPS</button>
+      <button class="btn" id="copyBtn">📋 Copier le message</button>
+    </div>
+    <div id="locationNote" class="notice info">La position GPS peut fonctionner sans réseau. L'adresse et la météo nécessitent une connexion.</div>
+  </section>
 
-    <div class="card">
-        <h2>📸 Photo probante</h2>
-        <p style="margin:0.85rem 0; color:#6b7280;">Prenez une photo : la date, l'heure et les coordonnées GPS y seront incrustées.</p>
-        <input type="file" id="photo-input" accept="image/*" capture="environment">
-        <button class="btn-action" onclick="document.getElementById('photo-input').click();">📷 Prendre une photo géolocalisée</button>
-        <div class="preview-container">
-            <img id="photo-preview" alt="Aperçu photo horodatée">
-            <br>
-            <a id="download-link" style="display:none; margin-top:10px; font-size:0.9rem; color:#2563eb; text-decoration:underline;" download="alerte_incendie.jpg">📥 Enregistrer la photo modifiée sur le téléphone</a>
-        </div>
+  <section>
+    <div class="section-title">
+      <span class="eyebrow">🌬️ Météo autour de la position</span>
+      <span id="weatherStatus" class="status warn">En attente</span>
     </div>
+    <div class="grid2">
+      <div class="card"><div class="eyebrow">Vent météo estimé</div><div id="windSpeed" class="big mono" style="margin-top:6px">--</div></div>
+      <div class="card"><div class="eyebrow">Direction</div><div id="windDir" class="big mono" style="margin-top:6px">--</div></div>
+    </div>
+    <div class="small muted" style="margin-top:8px">⚠️ Ce vent est une estimation météorologique, pas une mesure du vent réel à hauteur du sol.</div>
+  </section>
 
-    <div class="card">
-        <h2>📋 Synthèse et Envoi</h2>
-        <div id="synthese-texte" class="summary-box">Chargement...</div>
-        <button class="btn-action btn-share" onclick="envoyerRapport()">📤 Envoyer Message + Photo</button>
+  <section>
+    <div class="section-title"><span class="eyebrow">📷 Photo</span></div>
+    <label class="photo-label" for="cameraInput">📸 Photographier l'incendie — avec horodatage et position affichée</label>
+    <input id="cameraInput" type="file" accept="image/*" capture="environment">
+    <div id="photoBox">
+      <img id="photoPreview" class="photo" alt="Photo horodatée Vigie Feu">
+      <div class="card mono" style="margin-top:8px;font-size:10px;line-height:1.55">
+        <div id="photoMetaTime">VIGIE FEU • --</div>
+        <div id="photoMetaGps">GPS • --</div>
+      </div>
+      <div class="actions">
+        <button class="btn" id="sharePhotoBtn">Partager / enregistrer</button>
+        <button class="btn" id="clearPhotoBtn">Reprendre</button>
+      </div>
     </div>
+  </section>
+
+  <section>
+    <div class="section-title"><span class="eyebrow">🚨 Bilan de situation</span></div>
+    <div id="optionsRoot"></div>
+    <details>
+      <summary>📋 Précisions tactiques complémentaires</summary>
+      <div class="details-body" id="detailsRoot"></div>
+    </details>
+  </section>
+
+  <section>
+    <div class="section-title">
+      <span class="eyebrow">📞 Message à dicter aux secours</span>
+      <button class="btn" id="copyBtn2">Copier</button>
+    </div>
+    <div class="report">
+      <div class="label">1. POSITION</div><p id="reportLocation">Position GPS en attente.</p>
+    </div>
+    <div class="report">
+      <div class="label">2. DIRECTION / MÉTÉO</div><p id="reportDirection">Cap de visée non disponible.</p>
+    </div>
+    <div class="report">
+      <div class="label">3. URGENCES / CONTEXTE</div><p id="reportThreats">Aucun élément sélectionné.</p>
+    </div>
+    <div class="notice info">L'application ne remplace pas l'appel d'urgence. En cas de danger immédiat, appelez d'abord le 18 ou le 112.</div>
+  </section>
+
+  <section>
+    <div class="call-grid">
+      <a class="call call18" href="tel:18">🚒 APPELER LE 18</a>
+      <a class="call call112" href="tel:112">📞 APPELER LE 112</a>
+    </div>
+    <div class="small muted" style="text-align:center;margin-top:10px">Le 114 est accessible par SMS pour les personnes qui ne peuvent pas parler ou entendre.</div>
+  </section>
+
+  <footer class="footer">
+    <strong>Vigie Feu — prototype citoyen</strong><br>
+    Ne vous exposez jamais pour utiliser l'application.<br>
+    © 2026 Tristan Gibert
+  </footer>
+</div>
+
+<div id="infoModal" class="modal">
+  <div class="modal-card">
+    <button class="btn close" id="closeInfo">Fermer</button>
+    <h2 style="margin-top:0">À propos de Vigie Feu</h2>
+    <p class="small" style="line-height:1.6">
+      Vigie Feu aide à rassembler position GPS, orientation du téléphone, estimation météo et observations de terrain afin de faciliter un appel aux secours.
+      Les informations restent indicatives : elles doivent être confirmées oralement aux opérateurs.
+    </p>
+    <p class="small"><strong>Priorité absolue :</strong> votre sécurité et l'appel au 18/112.</p>
+  </div>
+</div>
+<div id="toast" class="toast"></div>
 
 <script>
-    let lat = null; let lon = null; let headingStr = "Non mesuré"; let processedImageBlob = null;
+'use strict';
 
-    function initGeo() {
-        document.getElementById('geo-status').innerHTML = "⏳ Acquisition du signal GPS...";
-        if ("geolocation" in navigator) {
-            navigator.geolocation.getCurrentPosition(
-                (position) => {
-                    lat = position.coords.latitude.toFixed(6);
-                    lon = position.coords.longitude.toFixed(6);
-                    const accuracy = Math.round(position.coords.accuracy);
-                    document.getElementById('geo-status').innerHTML = `✅ Position GPS verrouillée (~${accuracy}m)`;
-                    document.getElementById('geo-details').innerHTML = `<b>GPS :</b> ${lat}, ${lon} <br><a href="https://maps.google.com/?q=${lat},${lon}" target="_blank" style="color:#2563eb;">Ouvrir sur la carte</a>`;
-                    updateSynthese();
-                },
-                (error) => { document.getElementById('geo-status').innerHTML = `❌ Erreur GPS : ${error.message}`; updateSynthese(); },
-                { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
-            );
-        } else { document.getElementById('geo-status').innerHTML = "❌ Géolocalisation non supportée."; updateSynthese(); }
-    }
+const state = {
+  coords: { lat:null, lon:null, accuracy:null },
+  city: '', address: '', dms: '',
+  heading: null, wind: {speed:null, direction:null, cardinal:''},
+  threats: new Set(), photoBlob:null, photoUrl:null,
+  lastReverseGeo: 0, lastWeather: 0, orientationActive:false
+};
 
-    function initCompass() {
-        if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
-            DeviceOrientationEvent.requestPermission().then(response => {
-                if (response === 'granted') startListeningCompass();
-                else alert("Permission boussole refusée.");
-            }).catch(console.error);
-        } else { startListeningCompass(); }
-    }
+const optionGroups = [
+  ['Victimes & personnes', [
+    ['👥 Personnes / blessés menacés','Personnes / piétons / blessés directement menacés'],
+    ['🚗 Véhicules bloqués','Véhicules et occupants bloqués par les flammes']
+  ]],
+  ['Animaux & élevage', [
+    ['🐄 Bétail / étable menacé','Bétail agricole menacé (troupeau, pré, étable)'],
+    ['🐾 Animaux / faune piégés','Animaux domestiques ou faune piégée']
+  ]],
+  ['Bâtiments', [
+    ['🏠 Habitations proches menacées','Habitations / lotissements proches menacés'],
+    ['🏭 Usine / bâtiment agricole','Usine / entrepôt / bâtiment agricole / zone d’activité menacée']
+  ]],
+  ['Dangers & accès', [
+    ['⚡ Gaz / électricité / chimique','Danger imminent (lignes électriques, gaz, produits chimiques)'],
+    ['🌲 Accès difficile','Accès difficile pour les camions (piste étroite / DFCI)'],
+    ['🏃 J’évacue','Danger immédiat : évacuation en cours']
+  ]]
+];
 
-    function startListeningCompass() {
-        const handleOrientation = (event) => {
-            let heading = null;
-            if (event.webkitCompassHeading !== undefined) { heading = event.webkitCompassHeading; } 
-            else if (event.alpha !== null) { heading = event.absolute ? event.alpha : (360 - event.alpha); }
-            if (heading !== null) {
-                const rounded = Math.round(heading);
-                headingStr = `${getCardinalDirection(rounded)} (${rounded}°)`;
-                document.getElementById('compass-status').innerHTML = `Cap actuel : <b>${headingStr}</b>`;
-                const needle = document.getElementById('compass-needle');
-                if (needle) needle.style.transform = `rotate(${rounded}deg)`;
-                updateSynthese();
-            }
-        };
-        if ('ondeviceorientationabsolute' in window) { window.addEventListener('deviceorientationabsolute', handleOrientation, true); } 
-        else { window.addEventListener('deviceorientation', handleOrientation, true); }
-        document.getElementById('compass-status').innerHTML = "⏳ Calibrage boussole en cours...";
-    }
+const tacticalGroups = [
+  ['Végétation & flammes',[
+    ['🌿 Herbes / broussailles','Herbes sèches / broussailles'],
+    ['🌲 Pins / résineux','Pins / Forêt de résineux (Feu de cime)'],
+    ['🔥 Flammes > 2 m','Flammes > 2 mètres (Hauteur d’arbre)'],
+    ['🌱 Feu rampant bas','Feu rampant au sol (< 1 mètre)']
+  ]],
+  ['Fumée',[
+    ['💨 Fumée claire / blanche','Fumée blanche / grise claire (Végétation)'],
+    ['⬛ Fumée noire / dense','Fumée noire et dense (Pneus/Hydrocarbures)']
+  ]],
+  ['Surface & propagation',[
+    ['📐 Départ < 500 m²','Départ localisé (< 500 m²)'],
+    ['🚩 Front > 1 ha','Front étendu (> 1 hectare)'],
+    ['🌪️ Propagation rapide','Propagation rapide avec sautes de feu']
+  ]],
+  ['Relief, eau & témoin',[
+    ['⛰️ Pente raide ascendante','Feu montant une pente raide (effet de tirage)'],
+    ['💧 Citerne / eau proche','Point d’eau / Citerne DFCI visible proche'],
+    ['🙋 Je suis en sécurité / je guide','Témoin en sécurité prêt à guider les secours']
+  ]]
+];
 
-    function getCardinalDirection(angle) {
-        const directions = ['Nord', 'Nord-Est', 'Est', 'Sud-Est', 'Sud', 'Sud-Ouest', 'Ouest', 'Nord-Ouest'];
-        return directions[Math.round(angle / 45) % 8];
-    }
+const $ = id => document.getElementById(id);
+const cardinal = deg => ['Nord','Nord-Est','Est','Sud-Est','Sud','Sud-Ouest','Ouest','Nord-Ouest'][Math.round(((deg%360)+360)%360/45)%8];
 
-    function updateSynthese() {
-        const chemin = document.getElementById('chemin-carrossable').value.trim() || "Non précisé";
-        const ventInfo = document.getElementById('vent-manuel').value.trim() || "Non précisé";
-        const blesses = document.getElementById('blesses').checked ? "OUI" : "Non";
-        const voitures = document.getElementById('voitures').checked ? "OUI" : "Non";
-        const animaux = document.getElementById('animaux').checked ? "OUI" : "Non";
-        const reseaux = document.getElementById('reseaux').checked ? "OUI" : "Non";
-        const flammes = document.getElementById('hauteur-flammes').value;
-        const coordsText = (lat && lon) ? `${lat}, ${lon}` : "En attente du GPS...";
-
-        const texte = `ALERTE INCENDIE :
-- GPS : ${coordsText}
-- Accès : ${chemin}
-- Mon Cap : ${headingStr}
-- Vent : ${ventInfo}
-- Flammes : ${flammes}
-- Blessés : ${blesses} | Voitures : ${voitures} | Animaux : ${animaux} | Risque élec/gaz : ${reseaux}`;
-        document.getElementById('synthese-texte').innerText = texte;
-    }
-
-    document.getElementById('photo-input').addEventListener('change', function(event) {
-        const file = event.target.files[0];
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            const dataUrl = e.target.result;
-            const preview = document.getElementById('photo-preview');
-            preview.src = dataUrl;
-            preview.style.display = 'block';
-            const img = new Image();
-            img.onload = function() {
-                const canvas = document.createElement('canvas');
-                const MAX_WIDTH = 1280;
-                let width = img.width; let height = img.height;
-                if (width > MAX_WIDTH) { height = Math.round((height * MAX_WIDTH) / width); width = MAX_WIDTH; }
-                canvas.width = width; canvas.height = height;
-                const ctx = canvas.getContext('2d');
-                ctx.drawImage(img, 0, 0, width, height);
-                const now = new Date();
-                const dateStr = now.toLocaleDateString() + ' ' + now.toLocaleTimeString();
-                const gpsStr = (lat && lon) ? `GPS: ${lat}, ${lon}` : "GPS: En attente";
-                const padding = Math.max(15, Math.floor(width * 0.02));
-                const fontSize = Math.max(18, Math.floor(height * 0.035));
-                ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
-                ctx.fillRect(0, height - (fontSize * 2.8 + padding * 2), width, fontSize * 2.8 + padding * 2);
-                ctx.fillStyle = '#ffffff';
-                ctx.font = `bold ${fontSize}px sans-serif`;
-                ctx.fillText(`📅 ${dateStr}`, padding, height - (fontSize * 1.5 + padding));
-                ctx.fillText(`📍 ${gpsStr}`, padding, height - padding);
-                canvas.toBlob(function(blob) {
-                    processedImageBlob = blob;
-                    const downloadLink = document.getElementById('download-link');
-                    downloadLink.href = URL.createObjectURL(blob);
-                    downloadLink.style.display = 'inline-block';
-                }, 'image/jpeg', 0.85);
-            }
-            img.src = dataUrl;
-        }
-        reader.readAsDataURL(file);
+function toast(text){
+  const t=$('toast'); t.textContent=text; t.classList.add('show');
+  clearTimeout(toast.timer); toast.timer=setTimeout(()=>t.classList.remove('show'),2200);
+}
+function dms(deg,isLat){
+  const a=Math.abs(deg), d=Math.floor(a), m=Math.floor((a-d)*60);
+  const s=((a-d-m/60)*3600).toFixed(1);
+  const dir=isLat?(deg>=0?'N':'S'):(deg>=0?'E':'O');
+  return `${d}°${String(m).padStart(2,'0')}'${String(s).padStart(4,'0')}"${dir}`;
+}
+function renderOptions(rootId, groups){
+  const root=$(rootId); root.innerHTML='';
+  groups.forEach(([title,items])=>{
+    const box=document.createElement('div'); box.style.marginBottom='12px';
+    box.innerHTML=`<div class="eyebrow" style="margin-bottom:7px">${title}</div>`;
+    const grid=document.createElement('div'); grid.className='opt-grid';
+    items.forEach(([label,value])=>{
+      const b=document.createElement('button'); b.type='button'; b.className='opt';
+      b.innerHTML=`<span>${label}</span><span class="dot"></span>`;
+      b.dataset.value=value;
+      b.addEventListener('click',()=>toggleThreat(b,value));
+      grid.appendChild(b);
     });
+    box.appendChild(grid); root.appendChild(box);
+  });
+}
+function toggleThreat(btn,value){
+  if(state.threats.has(value)){
+    state.threats.delete(value); btn.classList.remove('selected');
+  }else{
+    state.threats.add(value); btn.classList.add('selected');
+  }
+  if(value.startsWith('Danger immédiat : évacuation')){
+    $('dangerMode').classList.toggle('active',state.threats.has(value));
+  }
+  updateReport();
+}
+function updateReport(){
+  const c=state.coords.lat!==null ? `${state.coords.lat.toFixed(5)}, ${state.coords.lon.toFixed(5)} (précision annoncée ±${Math.round(state.coords.accuracy||0)} m)` : 'Position GPS en attente.';
+  const place=[state.city,state.address].filter(Boolean).join(' — ');
+  $('reportLocation').textContent=`${place ? place+' | ' : ''}${c}${state.dms?' | RADIO : '+state.dms:''}`;
+  let direction=state.heading!==null ? `Cap de visée du téléphone : ${state.heading}° (${cardinal(state.heading)}).` : 'Cap de visée non disponible.';
+  if(state.wind.speed!==null) direction+=` Vent météo estimé : ${state.wind.speed} km/h, venant du ${state.wind.cardinal} (${state.wind.direction}°).`;
+  $('reportDirection').textContent=direction;
+  $('reportThreats').textContent=state.threats.size ? [...state.threats].join(' ; ') : 'Aucun élément particulier sélectionné.';
+}
+function setGpsStatus(text,type='warn'){
+  const el=$('gpsStatus'); el.textContent=text; el.className=`status ${type}`;
+}
+function setWeatherStatus(text,type='warn'){
+  const el=$('weatherStatus'); el.textContent=text; el.className=`status ${type}`;
+}
 
-    async function envoyerRapport() {
-        const texteSynthese = document.getElementById('synthese-texte').innerText;
-        if (navigator.share) {
-            try {
-                let shareData = { title: 'Alerte Incendie', text: texteSynthese };
-                if (processedImageBlob) {
-                    const file = new File([processedImageBlob], "alerte_incendie.jpg", { type: "image/jpeg" });
-                    if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                        shareData.files = [file];
-                    }
-                }
-                await navigator.share(shareData);
-            } catch (err) { if (err.name !== 'AbortError') alert("Erreur de partage : " + err.message); }
-        } else { alert("Partage direct non supporté sur ce navigateur."); }
+async function reverseGeocode(lat,lon){
+  const now=Date.now();
+  if(now-state.lastReverseGeo<30000) return;
+  state.lastReverseGeo=now;
+  $('city').textContent='Recherche…'; $('address').textContent='Recherche…';
+  try{
+    const ctrl=new AbortController(); const timer=setTimeout(()=>ctrl.abort(),7000);
+    const url=`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${encodeURIComponent(lat)}&lon=${encodeURIComponent(lon)}&zoom=18&addressdetails=1`;
+    const res=await fetch(url,{signal:ctrl.signal,headers:{'Accept':'application/json'}});
+    clearTimeout(timer);
+    if(!res.ok) throw new Error('reverse geocoding');
+    const data=await res.json(), a=data.address||{};
+    const town=a.city||a.town||a.village||a.municipality||a.county||'';
+    state.city=town+(a.postcode?' ('+a.postcode.slice(0,2)+')':'');
+    state.address=a.road||a.pedestrian||a.suburb||a.neighbourhood||a.natural||'Secteur naturel';
+    $('city').textContent=state.city||'Commune non identifiée';
+    $('address').textContent=state.address;
+    updateReport();
+  }catch(e){
+    $('city').textContent=state.city||'Indisponible hors connexion';
+    $('address').textContent=state.address||'Secteur naturel / voie non répertoriée';
+  }
+}
+async function getWeather(lat,lon){
+  const now=Date.now();
+  if(now-state.lastWeather<120000) return;
+  state.lastWeather=now;
+  setWeatherStatus('Actualisation…','warn');
+  try{
+    const ctrl=new AbortController(); const timer=setTimeout(()=>ctrl.abort(),7000);
+    const url=`https://api.open-meteo.com/v1/forecast?latitude=${encodeURIComponent(lat)}&longitude=${encodeURIComponent(lon)}&current=wind_speed_10m,wind_direction_10m&wind_speed_unit=kmh`;
+    const res=await fetch(url,{signal:ctrl.signal});
+    clearTimeout(timer);
+    if(!res.ok) throw new Error('weather');
+    const data=await res.json(), cur=data.current||{};
+    if(!Number.isFinite(cur.wind_speed_10m)||!Number.isFinite(cur.wind_direction_10m)) throw new Error('weather data');
+    state.wind.speed=Math.round(cur.wind_speed_10m);
+    state.wind.direction=Math.round(cur.wind_direction_10m);
+    state.wind.cardinal=cardinal(state.wind.direction);
+    $('windSpeed').textContent=`${state.wind.speed} km/h`;
+    $('windDir').textContent=`${state.wind.direction}° ${state.wind.cardinal}`;
+    setWeatherStatus('Disponible','ok'); updateReport();
+  }catch(e){
+    setWeatherStatus('Indisponible','bad');
+    $('windSpeed').textContent='--'; $('windDir').textContent='--';
+  }
+}
+function handlePosition(pos){
+  const {latitude,longitude,accuracy}=pos.coords;
+  state.coords={lat:latitude,lon:longitude,accuracy};
+  state.dms=`${dms(latitude,true)} ${dms(longitude,false)}`;
+  $('coords').textContent=`${latitude.toFixed(6)}, ${longitude.toFixed(6)}`;
+  $('accuracy').textContent=`±${Math.round(accuracy)} m`;
+  $('dms').textContent=state.dms;
+  setGpsStatus(`GPS calé ±${Math.round(accuracy)} m`,'ok');
+  $('locationNote').textContent='GPS disponible. L’adresse et la météo sont des services réseau secondaires.';
+  updateReport();
+  reverseGeocode(latitude,longitude);
+  getWeather(latitude,longitude);
+}
+function gpsError(err){
+  const msg={1:'Autorisation GPS refusée',2:'Position indisponible',3:'Délai GPS dépassé'}[err.code]||'Erreur GPS';
+  setGpsStatus(msg,'bad');
+  $('locationNote').textContent='La position n’a pas pu être obtenue. Vérifiez l’autorisation de localisation.';
+}
+function requestGPS(){
+  if(!navigator.geolocation){gpsError({code:2});return}
+  setGpsStatus('Recherche…','warn');
+  navigator.geolocation.getCurrentPosition(handlePosition,gpsError,{enableHighAccuracy:true,timeout:15000,maximumAge:0});
+}
+let watchId=null;
+if(navigator.geolocation){
+  watchId=navigator.geolocation.watchPosition(handlePosition,gpsError,{enableHighAccuracy:true,timeout:20000,maximumAge:5000});
+}
+
+function orientationHandler(e){
+  let raw=null;
+  if(Number.isFinite(e.webkitCompassHeading)) raw=e.webkitCompassHeading;
+  else if(Number.isFinite(e.alpha)) raw=e.absolute ? (360-e.alpha) : (360-e.alpha);
+  if(!Number.isFinite(raw)) return;
+  raw=((raw%360)+360)%360;
+  state.heading=Math.round(raw);
+  $('heading').textContent=`Cap téléphone : ${state.heading}°`;
+  $('aim').textContent=`${state.heading}°`;
+  $('aimCardinal').textContent=`Direction de visée : ${cardinal(state.heading)} — à confirmer visuellement.`;
+  $('headingStatus').textContent='Cap disponible — maintenez le téléphone vers la zone observée.';
+  $('headingStatus').className='small';
+  const target=-raw;
+  $('dial').style.transform=`rotate(${target}deg)`;
+  updateReport();
+}
+async function activateCompass(){
+  try{
+    if(typeof DeviceOrientationEvent==='undefined'){
+      toast('Boussole non disponible sur cet appareil'); return;
     }
+    if(typeof DeviceOrientationEvent.requestPermission==='function'){
+      const permission=await DeviceOrientationEvent.requestPermission();
+      if(permission!=='granted'){toast('Autorisation boussole refusée');return}
+    }
+    window.addEventListener('deviceorientationabsolute',orientationHandler,true);
+    window.addEventListener('deviceorientation',orientationHandler,true);
+    state.orientationActive=true; $('compassBtn').textContent='Boussole active ✓';
+    toast('Boussole activée');
+  }catch(e){toast('Impossible d’activer la boussole')}
+}
 
-    document.querySelectorAll('input[type="text"], select, input[type="checkbox"]').forEach(element => {
-        element.addEventListener('input', updateSynthese);
-        element.addEventListener('change', updateSynthese);
-    });
-    initGeo();
+function drawPhoto(file){
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    const img=new Image();
+    img.onload=()=>{
+      const max=1400; let w=img.naturalWidth,h=img.naturalHeight;
+      if(Math.max(w,h)>max){const scale=max/Math.max(w,h);w=Math.round(w*scale);h=Math.round(h*scale)}
+      const canvas=document.createElement('canvas'); canvas.width=w;canvas.height=h;
+      const ctx=canvas.getContext('2d');ctx.drawImage(img,0,0,w,h);
+      const now=new Date(), date=now.toLocaleDateString('fr-FR'),time=now.toLocaleTimeString('fr-FR');
+      const gps=state.coords.lat!==null ? `${state.coords.lat.toFixed(6)}, ${state.coords.lon.toFixed(6)}` : 'GPS indisponible';
+      const line1=`VIGIE FEU • ${date} ${time}${state.heading!==null?' • CAP '+state.heading+'°':''}`;
+      const line2=`GPS • ${gps}`;
+      const fs=Math.max(18,Math.round(w*.025)), pad=Math.round(fs*.7), bh=fs*2.8+pad*2;
+      ctx.fillStyle='#020617';ctx.fillRect(0,h-bh,w,bh);ctx.fillStyle='#e11d48';ctx.fillRect(0,h-bh,w,4);
+      ctx.font=`bold ${fs}px ui-monospace,monospace`;ctx.textBaseline='top';ctx.fillStyle='#fff';ctx.fillText(line1,pad,h-bh+pad);
+      ctx.fillStyle='#34d399';ctx.fillText(line2,pad,h-bh+pad+fs*1.3);
+      canvas.toBlob(blob=>{
+        if(!blob){toast('Erreur lors du traitement photo');return}
+        state.photoBlob=blob;state.photoUrl=URL.createObjectURL(blob);
+        $('photoPreview').src=state.photoUrl;$('photoMetaTime').textContent=line1;$('photoMetaGps').textContent=line2;
+        $('photoBox').style.display='block';toast('Photo horodatée');
+      },'image/jpeg',.9);
+    };img.src=ev.target.result;
+  };reader.readAsDataURL(file);
+}
+async function sharePhoto(){
+  if(!state.photoBlob)return;
+  const file=new File([state.photoBlob],`vigie-feu-${Date.now()}.jpg`,{type:'image/jpeg'});
+  try{
+    if(navigator.canShare?.({files:[file]})){await navigator.share({files:[file],title:'Vigie Feu'});return}
+  }catch(e){}
+  const a=document.createElement('a');a.href=state.photoUrl;a.download=file.name;a.click();
+}
+function clearPhoto(){
+  if(state.photoUrl)URL.revokeObjectURL(state.photoUrl);
+  state.photoBlob=null;state.photoUrl=null;$('cameraInput').value='';$('photoBox').style.display='none';
+}
+function buildMessage(){
+  return `🚨 MESSAGE SECOURS — VIGIE FEU 🚨
+1. POSITION : ${$('reportLocation').textContent}
+2. DIRECTION / MÉTÉO : ${$('reportDirection').textContent}
+3. URGENCES / CONTEXTE : ${$('reportThreats').textContent}
+⚠️ Données indicatives à confirmer oralement.`;
+}
+async function copyMessage(){
+  const msg=buildMessage();
+  try{await navigator.clipboard.writeText(msg);toast('Message copié')}
+  catch(e){
+    const ta=document.createElement('textarea');ta.value=msg;document.body.appendChild(ta);ta.select();
+    try{document.execCommand('copy');toast('Message copié')}catch(_){toast('Copie impossible')}
+    ta.remove();
+  }
+}
+
+renderOptions('optionsRoot',optionGroups);renderOptions('detailsRoot',tacticalGroups);
+$('refreshBtn').addEventListener('click',requestGPS);
+$('compassBtn').addEventListener('click',activateCompass);
+$('cameraInput').addEventListener('change',e=>e.target.files?.[0]&&drawPhoto(e.target.files[0]));
+$('sharePhotoBtn').addEventListener('click',sharePhoto);$('clearPhotoBtn').addEventListener('click',clearPhoto);
+$('copyBtn').addEventListener('click',copyMessage);$('copyBtn2').addEventListener('click',copyMessage);
+$('infoBtn').addEventListener('click',()=>$('infoModal').classList.add('open'));
+$('closeInfo').addEventListener('click',()=>$('infoModal').classList.remove('open'));
+$('infoModal').addEventListener('click',e=>{if(e.target===$('infoModal'))$('infoModal').classList.remove('open')});
+
+if('serviceWorker' in navigator) window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+requestGPS();
 </script>
 </body>
 </html>
