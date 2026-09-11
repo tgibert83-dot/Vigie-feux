@@ -3,262 +3,296 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alerte Incendie - Assistance Pompiers</title>
-    <meta name="theme-color" content="#dc2626">
+    <title>Vigie-feux - Intervention & Signalement</title>
     <style>
         :root {
-            --primary: #dc2626;
-            --bg: #f9fafb;
-            --card-bg: #ffffff;
-            --text: #1f2937;
-            --border: #e5e7eb;
+            --primary: #e63946;
+            --secondary: #1d3557;
+            --background: #f1faee;
+            --surface: #ffffff;
+            --text: #2b2d42;
+            --border: #a8dadc;
         }
+        
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--bg);
+            background-color: var(--background);
             color: var(--text);
             margin: 0;
             padding: 16px;
-            padding-bottom: 80px;
         }
-        header { text-align: center; margin-bottom: 20px; }
-        h1 { color: var(--primary); font-size: 1.5rem; margin-bottom: 4px; }
-        .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin-bottom: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-        h2 { font-size: 1.1rem; margin-top: 0; color: #374151; border-bottom: 2px solid var(--primary); padding-bottom: 6px; }
-        .btn-call { display: block; width: 100%; background-color: #16a34a; color: white; text-align: center; padding: 16px; font-size: 1.25rem; font-weight: bold; text-decoration: none; border-radius: 12px; box-shadow: 0 4px 6px rgba(22, 163, 74, 0.3); margin-bottom: 10px; box-sizing: border-box; }
-        .btn-action { display: block; width: 100%; background-color: #2563eb; color: white; text-align: center; padding: 12px; font-size: 1rem; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; margin-bottom: 10px; box-sizing: border-box; }
-        .btn-secondary { background-color: #4b5563; padding: 8px; font-size: 0.85rem; margin-top: 8px; }
-        .btn-share { background-color: #9333ea; }
-        label { display: block; margin-bottom: 8px; font-weight: 500; }
-        select, input[type="text"] { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 8px; font-size: 1rem; margin-bottom: 12px; box-sizing: border-box; }
-        .checkbox-group { display: grid; grid-template-columns: 1fr; gap: 10px; }
-        .checkbox-label { display: flex; align-items: center; background: #f3f4f6; padding: 10px; border-radius: 8px; cursor: pointer; font-size: 0.95rem; }
-        .checkbox-label input { margin-right: 12px; transform: scale(1.2); }
-        .info-box { background: #eff6ff; border: 1px solid #bfdbfe; padding: 10px; border-radius: 8px; font-size: 0.9rem; margin-bottom: 10px; }
-        .summary-box { background: #fef2f2; border: 1px solid #fecaca; padding: 12px; border-radius: 8px; font-family: monospace; font-size: 0.9rem; white-space: pre-wrap; word-break: break-word; margin-bottom: 12px; }
-        .compass-container { text-align: center; margin: 15px 0; }
-        .compass-dial { width: 140px; height: 140px; border: 4px solid #374151; border-radius: 50%; margin: 0 auto 10px auto; position: relative; background: radial-gradient(circle, #ffffff 60%, #f3f4f6 100%); display: flex; align-items: center; justify-content: center; box-shadow: inset 0 2px 4px rgba(0,0,0,0.1); }
-        .compass-needle { width: 4px; height: 100px; background: transparent; position: absolute; transition: transform 0.1s ease-out; }
-        .compass-needle::before { content: ''; position: absolute; top: 0; left: 0; width: 0; height: 0; border-left: 6px solid transparent; border-right: 6px solid transparent; border-bottom: 50px solid #dc2626; }
-        .compass-needle::after { content: ''; position: absolute; bottom: 0; left: 0; width: 0; height: 0; border-left: 6px solid transparent; border-right: 6px solid transparent; border-top: 50px solid #4b5563; }
-        .compass-labels { position: absolute; width: 100%; height: 100%; font-weight: bold; font-size: 0.8rem; color: #4b5563; }
-        .c-n { position: absolute; top: 2px; left: calc(50% - 4px); color: #dc2626; }
-        .c-s { position: absolute; bottom: 2px; left: calc(50% - 4px); }
-        .c-e { position: absolute; right: 6px; top: calc(50% - 10px); }
-        .c-w { position: absolute; left: 6px; top: calc(50% - 10px); }
-        #photo-input { display: none; }
-        .preview-container { text-align: center; margin-top: 10px; }
-        #photo-preview { max-width: 100%; max-height: 250px; border-radius: 8px; border: 1px solid var(--border); display: none; margin: 10px auto; }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        header h1 {
+            color: var(--primary);
+            margin: 0 0 8px 0;
+            font-size: 1.8rem;
+        }
+
+        .card {
+            background: var(--surface);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            border: 1px solid var(--border);
+        }
+
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            margin-bottom: 12px;
+        }
+
+        .btn-danger {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-primary {
+            background-color: var(--secondary);
+            color: white;
+        }
+
+        .info-group {
+            margin-bottom: 12px;
+        }
+
+        .info-label {
+            font-size: 0.85rem;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .info-value {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        input[type="text"], select {
+            width: 100%;
+            padding: 10px;
+            margin-top: 4px;
+            margin-bottom: 12px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 1rem;
+        }
+
+        /* Boussole */
+        .compass-container {
+            text-align: center;
+            margin: 15px 0;
+        }
+        .compass-dial {
+            width: 90px;
+            height: 90px;
+            border: 4px solid var(--secondary);
+            border-radius: 50%;
+            margin: 0 auto;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.1rem;
+            background: #fafafa;
+        }
+        .compass-arrow {
+            position: absolute;
+            width: 4px;
+            height: 45px;
+            background-color: var(--primary);
+            top: 8px;
+            transform-origin: bottom center;
+        }
+
+        video, canvas {
+            width: 100%;
+            max-height: 300px;
+            border-radius: 8px;
+            object-fit: cover;
+            background: #000;
+            display: none;
+            margin-bottom: 12px;
+        }
     </style>
 </head>
 <body>
-    <header>
-        <h1>🚨 Alerte Incendie Express</h1>
-        <p style="margin:0; font-size:0.9rem; color:#6b7280;">Secours & Assistance Terrain</p>
-    </header>
+    <div class="container">
+        <header>
+            <h1>🔥 Vigie-feux</h1>
+            <p>Outil d'Aide à l'Intervention</p>
+        </header>
 
-    <a href="tel:112" class="btn-call">📞 APPELER LE 112 / 18</a>
+        <!-- Urgence -->
+        <div class="card">
+            <a href="tel:18" class="btn btn-danger">Appeler le 18 (Pompiers)</a>
+            <a href="tel:112" class="btn btn-danger">Appeler le 112 (Secours européen)</a>
+        </div>
 
-    <div class="card">
-        <h2>📍 Localisation</h2>
-        <div id="geo-status" class="info-box">Recherche de la position GPS précise en cours...</div>
-        <div id="geo-details" style="font-size: 0.9rem; margin-bottom: 10px;"></div>
-        <button class="btn-action btn-secondary" onclick="initGeo()">🔄 Rafraîchir le GPS</button>
-        <label for="chemin-carrossable" style="margin-top:10px;">Précision chemin / accès :</label>
-        <input type="text" id="chemin-carrossable" placeholder="Ex: Chemin forestier accessible aux 4x4, barrière ouverte...">
-    </div>
-
-    <div class="card">
-        <h2>🧭 Orientation & Vent</h2>
-        <div class="compass-container">
-            <div class="compass-dial">
-                <div class="compass-labels">
-                    <span class="c-n">N</span>
-                    <span class="c-e">E</span>
-                    <span class="c-s">S</span>
-                    <span class="c-w">O</span>
-                </div>
-                <div id="compass-needle" class="compass-needle"></div>
+        <!-- Localisation et Boussole -->
+        <div class="card">
+            <h3>Position & Orientation</h3>
+            <div class="info-group">
+                <div class="info-label">Coordonnées GPS</div>
+                <div id="coords" class="info-value">Recherche en cours...</div>
             </div>
-            <div id="compass-status" style="font-weight: 600; font-size: 0.95rem; margin-bottom: 4px;">Cap : En attente d'activation</div>
-            <div style="font-size: 0.75rem; color: #6b7280; margin-bottom: 8px;">Astuce : faites un mouvement en 8 avec le téléphone.</div>
-            <button class="btn-action btn-secondary" onclick="initCompass()" style="max-width: 200px; margin: 0 auto;">Activer la boussole</button>
+            <div class="info-group">
+                <div class="info-label">Précision</div>
+                <div id="accuracy" class="info-value">-</div>
+            </div>
+
+            <div class="compass-container">
+                <div class="info-label" style="margin-bottom: 8px;">Cap / Orientation</div>
+                <div class="compass-dial">
+                    <div id="compass-arrow" class="compass-arrow"></div>
+                    <span id="heading-val">0°</span>
+                </div>
+            </div>
+
+            <button class="btn btn-primary" onclick="initSensors()">Actualiser Capteurs & GPS</button>
         </div>
-        <label for="vent-manuel" style="margin-top: 15px;">Force et direction du vent :</label>
-        <input type="text" id="vent-manuel" value="Vent faible, direction variable" placeholder="Ex: Vent fort d'Ouest, 30 km/h...">
-    </div>
 
-    <div class="card">
-        <h2>🔥 Situation sur place</h2>
-        <div class="checkbox-group">
-            <label class="checkbox-label"><input type="checkbox" id="blesses"> ⚠️ Présence de blessé(s)</label>
-            <label class="checkbox-label"><input type="checkbox" id="voitures"> 🚗 Véhicules bloqués / en danger</label>
-            <label class="checkbox-label"><input type="checkbox" id="animaux"> 🐾 Animaux en danger</label>
-            <label class="checkbox-label"><input type="checkbox" id="reseaux"> ⚡ Risque électrique ou gaz (lignes, coffrets)</label>
+        <!-- Météo / Vent -->
+        <div class="card">
+            <h3>Observations Météo</h3>
+            <div class="info-group">
+                <label class="info-label" for="wind-dir">Direction estimée du vent</label>
+                <select id="wind-dir">
+                    <option value="Nord">Nord (N)</option>
+                    <option value="Nord-Est">Nord-Est (NE)</option>
+                    <option value="Est">Est (E)</option>
+                    <option value="Sud-Est">Sud-Est (SE)</option>
+                    <option value="Sud">Sud (S)</option>
+                    <option value="Sud-Ouest">Sud-Ouest (SO)</option>
+                    <option value="Ouest">Ouest (O)</option>
+                    <option value="Nord-Ouest">Nord-Ouest (NO)</option>
+                </select>
+            </div>
+            <div class="info-group">
+                <label class="info-label" for="wind-force">Force du vent</label>
+                <select id="wind-force">
+                    <option value="Faible / Nul">Faible / Nul</option>
+                    <option value="Modéré">Modéré</option>
+                    <option value="Fort / Violent">Fort / Violent</option>
+                </select>
+            </div>
         </div>
-        <label for="hauteur-flammes" style="margin-top:12px;">Hauteur estimée des flammes :</label>
-        <select id="hauteur-flammes">
-            <option value="Herbes / Broussailles basses (< 1m)">Herbes / Broussailles basses (&lt; 1m)</option>
-            <option value="À hauteur d'homme / Arbustes (1 à 3m)">À hauteur d'homme / Arbustes (1 à 3m)</option>
-            <option value="La cime des arbres / Forêt (> 3m)">La cime des arbres / Forêt (&gt; 3m)</option>
-            <option value="Immenses / Menace des habitations">Immenses / Menace directe des habitations</option>
-        </select>
-    </div>
 
-    <div class="card">
-        <h2>📸 Photo probante</h2>
-        <p style="margin:0.85rem 0; color:#6b7280;">Prenez une photo : la date, l'heure et les coordonnées GPS y seront incrustées.</p>
-        <input type="file" id="photo-input" accept="image/*" capture="environment">
-        <button class="btn-action" onclick="document.getElementById('photo-input').click();">📷 Prendre une photo géolocalisée</button>
-        <div class="preview-container">
-            <img id="photo-preview" alt="Aperçu photo horodatée">
-            <br>
-            <a id="download-link" style="display:none; margin-top:10px; font-size:0.9rem; color:#2563eb; text-decoration:underline;" download="alerte_incendie.jpg">📥 Enregistrer la photo modifiée sur le téléphone</a>
+        <!-- Module Photo -->
+        <div class="card">
+            <h3>Capture de situation</h3>
+            <video id="video" autoplay playsinline></video>
+            <canvas id="canvas"></canvas>
+            <button id="btn-camera" class="btn btn-primary" onclick="toggleCamera()">Activer la caméra</button>
+            <button id="btn-snapshot" class="btn btn-danger" style="display:none;" onclick="takeSnapshot()">Prendre une photo horodatée</button>
         </div>
     </div>
 
-    <div class="card">
-        <h2>📋 Synthèse et Envoi</h2>
-        <div id="synthese-texte" class="summary-box">Chargement...</div>
-        <button class="btn-action btn-share" onclick="envoyerRapport()">📤 Envoyer Message + Photo</button>
-    </div>
-
-<script>
-    let lat = null; let lon = null; let headingStr = "Non mesuré"; let processedImageBlob = null;
-
-    function initGeo() {
-        document.getElementById('geo-status').innerHTML = "⏳ Acquisition du signal GPS...";
-        if ("geolocation" in navigator) {
-            navigator.geolocation.getCurrentPosition(
-                (position) => {
-                    lat = position.coords.latitude.toFixed(6);
-                    lon = position.coords.longitude.toFixed(6);
-                    const accuracy = Math.round(position.coords.accuracy);
-                    document.getElementById('geo-status').innerHTML = `✅ Position GPS verrouillée (~${accuracy}m)`;
-                    document.getElementById('geo-details').innerHTML = `<b>GPS :</b> ${lat}, ${lon} <br><a href="https://maps.google.com/?q=${lat},${lon}" target="_blank" style="color:#2563eb;">Ouvrir sur la carte</a>`;
-                    updateSynthese();
-                },
-                (error) => { document.getElementById('geo-status').innerHTML = `❌ Erreur GPS : ${error.message}`; updateSynthese(); },
-                { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
-            );
-        } else { document.getElementById('geo-status').innerHTML = "❌ Géolocalisation non supportée."; updateSynthese(); }
-    }
-
-    function initCompass() {
-        if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
-            DeviceOrientationEvent.requestPermission().then(response => {
-                if (response === 'granted') startListeningCompass();
-                else alert("Permission boussole refusée.");
-            }).catch(console.error);
-        } else { startListeningCompass(); }
-    }
-
-    function startListeningCompass() {
-        const handleOrientation = (event) => {
-            let heading = null;
-            if (event.webkitCompassHeading !== undefined) { heading = event.webkitCompassHeading; } 
-            else if (event.alpha !== null) { heading = event.absolute ? event.alpha : (360 - event.alpha); }
-            if (heading !== null) {
-                const rounded = Math.round(heading);
-                headingStr = `${getCardinalDirection(rounded)} (${rounded}°)`;
-                document.getElementById('compass-status').innerHTML = `Cap actuel : <b>${headingStr}</b>`;
-                const needle = document.getElementById('compass-needle');
-                if (needle) needle.style.transform = `rotate(${rounded}deg)`;
-                updateSynthese();
+    <script>
+        // Géolocalisation
+        function getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        const lat = position.coords.latitude.toFixed(6);
+                        const lon = position.coords.longitude.toFixed(6);
+                        const acc = position.coords.accuracy.toFixed(1);
+                        document.getElementById('coords').innerText = `${lat}, ${lon}`;
+                        document.getElementById('accuracy').innerText = `${acc} mètres`;
+                    },
+                    (error) => {
+                        document.getElementById('coords').innerText = "Erreur de géolocalisation";
+                    },
+                    { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+                );
             }
-        };
-        if ('ondeviceorientationabsolute' in window) { window.addEventListener('deviceorientationabsolute', handleOrientation, true); } 
-        else { window.addEventListener('deviceorientation', handleOrientation, true); }
-        document.getElementById('compass-status').innerHTML = "⏳ Calibrage boussole en cours...";
-    }
-
-    function getCardinalDirection(angle) {
-        const directions = ['Nord', 'Nord-Est', 'Est', 'Sud-Est', 'Sud', 'Sud-Ouest', 'Ouest', 'Nord-Ouest'];
-        return directions[Math.round(angle / 45) % 8];
-    }
-
-    function updateSynthese() {
-        const chemin = document.getElementById('chemin-carrossable').value.trim() || "Non précisé";
-        const ventInfo = document.getElementById('vent-manuel').value.trim() || "Non précisé";
-        const blesses = document.getElementById('blesses').checked ? "OUI" : "Non";
-        const voitures = document.getElementById('voitures').checked ? "OUI" : "Non";
-        const animaux = document.getElementById('animaux').checked ? "OUI" : "Non";
-        const reseaux = document.getElementById('reseaux').checked ? "OUI" : "Non";
-        const flammes = document.getElementById('hauteur-flammes').value;
-        const coordsText = (lat && lon) ? `${lat}, ${lon}` : "En attente du GPS...";
-
-        const texte = `ALERTE INCENDIE :
-- GPS : ${coordsText}
-- Accès : ${chemin}
-- Mon Cap : ${headingStr}
-- Vent : ${ventInfo}
-- Flammes : ${flammes}
-- Blessés : ${blesses} | Voitures : ${voitures} | Animaux : ${animaux} | Risque élec/gaz : ${reseaux}`;
-        document.getElementById('synthese-texte').innerText = texte;
-    }
-
-    document.getElementById('photo-input').addEventListener('change', function(event) {
-        const file = event.target.files[0];
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            const dataUrl = e.target.result;
-            const preview = document.getElementById('photo-preview');
-            preview.src = dataUrl;
-            preview.style.display = 'block';
-            const img = new Image();
-            img.onload = function() {
-                const canvas = document.createElement('canvas');
-                const MAX_WIDTH = 1280;
-                let width = img.width; let height = img.height;
-                if (width > MAX_WIDTH) { height = Math.round((height * MAX_WIDTH) / width); width = MAX_WIDTH; }
-                canvas.width = width; canvas.height = height;
-                const ctx = canvas.getContext('2d');
-                ctx.drawImage(img, 0, 0, width, height);
-                const now = new Date();
-                const dateStr = now.toLocaleDateString() + ' ' + now.toLocaleTimeString();
-                const gpsStr = (lat && lon) ? `GPS: ${lat}, ${lon}` : "GPS: En attente";
-                const padding = Math.max(15, Math.floor(width * 0.02));
-                const fontSize = Math.max(18, Math.floor(height * 0.035));
-                ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
-                ctx.fillRect(0, height - (fontSize * 2.8 + padding * 2), width, fontSize * 2.8 + padding * 2);
-                ctx.fillStyle = '#ffffff';
-                ctx.font = `bold ${fontSize}px sans-serif`;
-                ctx.fillText(`📅 ${dateStr}`, padding, height - (fontSize * 1.5 + padding));
-                ctx.fillText(`📍 ${gpsStr}`, padding, height - padding);
-                canvas.toBlob(function(blob) {
-                    processedImageBlob = blob;
-                    const downloadLink = document.getElementById('download-link');
-                    downloadLink.href = URL.createObjectURL(blob);
-                    downloadLink.style.display = 'inline-block';
-                }, 'image/jpeg', 0.85);
-            }
-            img.src = dataUrl;
         }
-        reader.readAsDataURL(file);
-    });
 
-    async function envoyerRapport() {
-        const texteSynthese = document.getElementById('synthese-texte').innerText;
-        if (navigator.share) {
-            try {
-                let shareData = { title: 'Alerte Incendie', text: texteSynthese };
-                if (processedImageBlob) {
-                    const file = new File([processedImageBlob], "alerte_incendie.jpg", { type: "image/jpeg" });
-                    if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                        shareData.files = [file];
+        // Boussole lissée
+        function initSensors() {
+            getLocation();
+            if (window.DeviceOrientationEvent) {
+                window.addEventListener('deviceorientation', (event) => {
+                    let heading = event.alpha;
+                    if (heading !== null) {
+                        heading = Math.round(360 - heading);
+                        document.getElementById('heading-val').innerText = `${heading}°`;
+                        document.getElementById('compass-arrow').style.transform = `rotate(${heading}deg)`;
                     }
-                }
-                await navigator.share(shareData);
-            } catch (err) { if (err.name !== 'AbortError') alert("Erreur de partage : " + err.message); }
-        } else { alert("Partage direct non supporté sur ce navigateur."); }
-    }
+                }, true);
+            }
+        }
 
-    document.querySelectorAll('input[type="text"], select, input[type="checkbox"]').forEach(element => {
-        element.addEventListener('input', updateSynthese);
-        element.addEventListener('change', updateSynthese);
-    });
-    initGeo();
-</script>
+        // Caméra et Capture
+        let videoStream = null;
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const btnCamera = document.getElementById('btn-camera');
+        const btnSnapshot = document.getElementById('btn-snapshot');
+
+        async function toggleCamera() {
+            if (!videoStream) {
+                try {
+                    videoStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio: false });
+                    video.srcObject = videoStream;
+                    video.style.display = 'block';
+                    btnCamera.innerText = "Fermer la caméra";
+                    btnSnapshot.style.display = 'block';
+                } catch (err) {
+                    alert("Impossible d'accéder à la caméra : " + err.message);
+                }
+            } else {
+                videoStream.getTracks().forEach(track => track.stop());
+                videoStream = null;
+                video.style.display = 'none';
+                btnCamera.innerText = "Activer la caméra";
+                btnSnapshot.style.display = 'none';
+            }
+        }
+
+        function takeSnapshot() {
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
+            ctx.fillRect(10, canvas.height - 60, canvas.width - 20, 50);
+            ctx.fillStyle = '#ffffff';
+            ctx.font = '15px sans-serif';
+            const timestamp = new Date().toLocaleString('fr-FR');
+            const windDir = document.getElementById('wind-dir').value;
+            const windForce = document.getElementById('wind-force').value;
+            
+            ctx.fillText(`Vigie-feux - ${timestamp}`, 20, canvas.height - 35);
+            ctx.fillText(`Vent: ${windDir} (${windForce})`, 20, canvas.height - 15);
+            
+            canvas.style.display = 'block';
+            video.style.display = 'none';
+        }
+
+        window.onload = getLocation;
+    </script>
 </body>
 </html>
