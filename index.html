@@ -127,21 +127,27 @@
             margin-top: 16px;
         }
 
+        /* Conteneur pour les boutons d'appel et SOS côte à côte / empilés proprement */
+        .emergency-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
         .btn-call {
             display: flex;
             align-items: center;
             justify-content: center;
-            width: 100%;
             background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
             color: white;
             text-align: center;
-            padding: 18px;
-            font-size: 1.35rem;
+            padding: 16px 10px;
+            font-size: 1.15rem;
             font-weight: 800;
             text-decoration: none;
             border-radius: var(--radius);
-            box-shadow: 0 10px 20px -5px rgba(22, 163, 74, 0.5);
-            margin-bottom: 16px;
+            box-shadow: 0 8px 16px -4px rgba(22, 163, 74, 0.4);
             box-sizing: border-box;
             letter-spacing: 0.025em;
             transition: all 0.2s ease;
@@ -154,39 +160,44 @@
 
         @keyframes pulse-green {
             0% { box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.4); }
-            70% { box-shadow: 0 0 0 12px rgba(22, 163, 74, 0); }
+            70% { box-shadow: 0 0 0 10px rgba(22, 163, 74, 0); }
             100% { box-shadow: 0 0 0 0 rgba(22, 163, 74, 0); }
         }
 
+        /* Bouton SOS plus petit et discret */
         .btn-sos {
             display: flex;
             align-items: center;
             justify-content: center;
-            width: 100%;
-            background: linear-gradient(135deg, #eab308 0%, #ca8a04 100%);
-            color: #0f172a;
+            grid-column: span 2;
+            background: rgba(234, 179, 8, 0.15);
+            border: 1px solid rgba(234, 179, 8, 0.4);
+            color: #fde047;
             text-align: center;
-            padding: 14px;
-            font-size: 1.1rem;
-            font-weight: 800;
-            border: none;
-            border-radius: var(--radius);
+            padding: 10px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            border-radius: 12px;
             cursor: pointer;
-            margin-bottom: 24px;
             box-sizing: border-box;
-            box-shadow: 0 6px 15px rgba(234, 179, 8, 0.3);
             transition: all 0.2s ease;
+            margin-bottom: 8px;
+        }
+
+        .btn-sos:hover {
+            background: rgba(234, 179, 8, 0.25);
         }
 
         .btn-sos.active {
             background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
             color: white;
+            border-color: transparent;
             animation: pulse-sos 1s infinite;
         }
 
         @keyframes pulse-sos {
             0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.6); }
-            70% { box-shadow: 0 0 0 12px rgba(239, 68, 68, 0); }
+            70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
             100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
         }
 
@@ -486,8 +497,12 @@
         <p>Secours & Assistance Terrain</p>
     </header>
 
-    <a href="tel:112" class="btn-call">📞 APPELER LE 112 / 18</a>
-    <button id="btn-sos-toggle" class="btn-sos" onclick="toggleSOS()">🔦 Lampe Torche / Signal SOS Visuel</button>
+    <!-- Choix d'appel 112 ou 18 + Bouton SOS compact -->
+    <div class="emergency-grid">
+        <button id="btn-sos-toggle" class="btn-sos" onclick="toggleSOS()">🔦 Lampe Torche / Signal SOS</button>
+        <a href="tel:112" class="btn-call">📞 112 (EU)</a>
+        <a href="tel:18" class="btn-call">📞 18 (Pompiers)</a>
+    </div>
 
     <!-- Menu dépliant d'information & Sécurité -->
     <div class="card">
@@ -627,7 +642,6 @@
                     
                     if (capabilities.torch) {
                         flashTrack = track;
-                        // Séquence SOS en morse (3 courts, 3 longs, 3 courts) via le flash matériel
                         runTorchSOS(flashTrack);
                         return;
                     }
@@ -655,7 +669,7 @@
         const overlay = document.getElementById('sos-overlay');
         
         btn.classList.remove('active');
-        btn.innerText = "🔦 Lampe Torche / Signal SOS Visuel";
+        btn.innerText = "🔦 Lampe Torche / Signal SOS";
         overlay.style.display = 'none';
 
         if (flashTrack) {
@@ -672,7 +686,6 @@
         }
     }
 
-    // Gestion de la cadence SOS en morse pour le flash
     async function runTorchSOS(track) {
         const dot = 200;
         const dash = 600;
@@ -687,15 +700,12 @@
         }
 
         while (sosActive) {
-            // S (3 points)
             for(let i=0; i<3; i++) { if(!sosActive) break; await pulse(dot); }
             await new Promise(r => setTimeout(r, 400));
-            // O (3 traits)
             for(let i=0; i<3; i++) { if(!sosActive) break; await pulse(dash); }
             await new Promise(r => setTimeout(r, 400));
-            // S (3 points)
             for(let i=0; i<3; i++) { if(!sosActive) break; await pulse(dot); }
-            await new Promise(r => setTimeout(r, 1200)); // Pause avant de répéter
+            await new Promise(r => setTimeout(r, 1200));
         }
     }
 
