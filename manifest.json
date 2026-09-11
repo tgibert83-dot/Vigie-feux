@@ -1,16 +1,16 @@
 {
   "name": "Vigie-Feux",
-  "short_name": "VigieFeux",
-  "start_url": "/",
+  "short_name": "Vigie-Feux",
+  "start_url": "./index.html",
+  "scope": "./",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#2c5e3b",
+  "background_color": "#0f172a",
+  "theme_color": "#b91c1c",
   "icons": [
     {
       "src": "favicon.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any maskable"
+      "sizes": "192x192 512x512",
+      "type": "image/png"
     }
   ]
 }
