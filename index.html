@@ -276,7 +276,7 @@
             height: 110px;
             background: transparent;
             position: absolute;
-            transition: transform 0.1s ease-out;
+            transition: transform 0.3s ease-out; /* Adouci pour éviter les soubresauts */
         }
 
         .compass-needle::before {
@@ -380,7 +380,7 @@
             <div style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 12px;">Astuce : faites un mouvement en 8 avec le téléphone.</div>
             <button class="btn-action btn-secondary" onclick="initCompass()" style="max-width: 200px; margin: 0 auto;">Activer la boussole</button>
         </div>
-        <label for="vent-manuel" style="margin-top: 15px;">Force et direction du vent (Automatique ou modifiable) :</label>
+        <label for="vent-manuel" style="margin-top: 15px;">Force et direction du vent :</label>
         <input type="text" id="vent-manuel" value="Récupération météo en cours..." placeholder="Ex: Vent d'Ouest, 30 km/h...">
     </div>
 
@@ -421,6 +421,7 @@
 
 <script>
     let lat = null; let lon = null; let headingStr = "Non mesuré"; let processedImageBlob = null;
+    let smoothedHeading = null; // Variable pour stocker le cap lissé
 
     function initGeo() {
         document.getElementById('geo-status').innerHTML = "⏳ Acquisition du signal GPS...";
@@ -433,9 +434,7 @@
                     document.getElementById('geo-status').innerHTML = `✅ Position GPS verrouillée (~${accuracy}m)`;
                     document.getElementById('geo-details').innerHTML = `<b>GPS :</b> ${lat}, ${lon} <br><a href="https://maps.google.com/?q=${lat},${lon}" target="_blank" style="color:#60a5fa; font-weight:500;">Ouvrir sur la carte</a>`;
                     
-                    // Récupération automatique de la météo via Open-Meteo
                     fetchMeteo(lat, lon);
-                    
                     updateSynthese();
                 },
                 (error) => { document.getElementById('geo-status').innerHTML = `❌ Erreur GPS : ${error.message}`; updateSynthese(); },
@@ -477,8 +476,22 @@
             let heading = null;
             if (event.webkitCompassHeading !== undefined) { heading = event.webkitCompassHeading; } 
             else if (event.alpha !== null) { heading = event.absolute ? event.alpha : (360 - event.alpha); }
+            
             if (heading !== null) {
-                const rounded = Math.round(heading);
+                // Application d'un filtre de lissage (moyenne mobile pour atténuer la sensibilité excessive)
+                if (smoothedHeading === null) {
+                    smoothedHeading = heading;
+                } else {
+                    // Gestion du passage de 360° à 0° pour éviter les sauts brusques
+                    let diff = heading - smoothedHeading;
+                    if (diff > 180) diff -= 360;
+                    if (diff < -180) diff += 360;
+                    smoothedHeading += diff * 0.15; // Facteur de lissage (plus il est bas, plus c'est stable)
+                    if (smoothedHeading < 0) smoothedHeading += 360;
+                    if (smoothedHeading >= 360) smoothedHeading -= 360;
+                }
+
+                const rounded = Math.round(smoothedHeading);
                 headingStr = `${getCardinalDirection(rounded)} (${rounded}°)`;
                 document.getElementById('compass-status').innerHTML = `Cap actuel : <b>${headingStr}</b>`;
                 const needle = document.getElementById('compass-needle');
