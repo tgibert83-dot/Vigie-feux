@@ -127,7 +127,6 @@
             margin-top: 16px;
         }
 
-        /* Conteneur pour les boutons d'appel et SOS côte à côte / empilés proprement */
         .emergency-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -164,7 +163,6 @@
             100% { box-shadow: 0 0 0 0 rgba(22, 163, 74, 0); }
         }
 
-        /* Bouton SOS plus petit et discret */
         .btn-sos {
             display: flex;
             align-items: center;
@@ -181,7 +179,7 @@
             cursor: pointer;
             box-sizing: border-box;
             transition: all 0.2s ease;
-            margin-bottom: 8px;
+            margin-bottom: 4px;
         }
 
         .btn-sos:hover {
@@ -239,9 +237,34 @@
         .btn-share {
             background: linear-gradient(135deg, #a855f7 0%, #9333ea 100%);
             box-shadow: 0 4px 15px rgba(147, 51, 234, 0.4);
-            font-size: 1.1rem;
-            padding: 16px;
+            font-size: 1.05rem;
+            padding: 15px;
             font-weight: 700;
+        }
+
+        /* Bouton SMS 114 modernisé pour le bas de page */
+        .btn-sms-114 {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            color: white;
+            text-align: center;
+            padding: 15px;
+            font-size: 1.05rem;
+            font-weight: 700;
+            text-decoration: none;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4);
+            box-sizing: border-box;
+            transition: all 0.2s ease;
+            margin-bottom: 12px;
+        }
+
+        .btn-sms-114:hover {
+            opacity: 0.95;
+            transform: translateY(-1px);
         }
 
         label {
@@ -452,7 +475,6 @@
         }
         #download-link:hover { text-decoration: underline; }
 
-        /* Style plein écran pour signal SOS visuel de secours si pas de flash */
         #sos-overlay {
             position: fixed;
             top: 0; left: 0; width: 100vw; height: 100vh;
@@ -484,7 +506,6 @@
 </head>
 <body>
 
-    <!-- Overlay flash visuel de secours -->
     <div id="sos-overlay" onclick="toggleSOS()">
         <span style="font-size: 4rem; margin-bottom: 20px;">🚨</span>
         SIGNAL SOS ACTIF<br>
@@ -497,7 +518,7 @@
         <p>Secours & Assistance Terrain</p>
     </header>
 
-    <!-- Choix d'appel 112 ou 18 + Bouton SOS compact -->
+    <!-- Zone d'urgence en haut (SOS + Appels 112/18) -->
     <div class="emergency-grid">
         <button id="btn-sos-toggle" class="btn-sos" onclick="toggleSOS()">🔦 Lampe Torche / Signal SOS</button>
         <a href="tel:112" class="btn-call">📞 112 (EU)</a>
@@ -603,10 +624,12 @@
         </div>
     </div>
 
+    <!-- Synthèse et Envoi en bas de page (Message+Photo et SMS d'urgence 114) -->
     <div class="card">
         <h2>📋 Synthèse et Envoi</h2>
         <div id="synthese-texte" class="summary-box">Chargement...</div>
         <button class="btn-action btn-share" onclick="envoyerRapport()">📤 Envoyer Message + Photo</button>
+        <a id="btn-sms-114" href="sms:114?body=" class="btn-sms-114">💬 Envoyer uniquement le texte aux Urgences (114)</a>
     </div>
 
     <footer>
@@ -618,7 +641,6 @@
     let lat = null; let lon = null; let addressStr = "Adresse non disponible"; let headingStr = "Non mesuré"; let processedImageBlob = null;
     let smoothedHeading = null;
     
-    // Variables pour la gestion de la lampe torche / SOS
     let sosActive = false;
     let flashTrack = null;
     let sosInterval = null;
@@ -633,7 +655,6 @@
             btn.innerText = "🛑 ARRÊTER LE SIGNAL SOS";
             overlay.style.display = 'flex';
 
-            // Tentative d'activation du flash matériel (Torch)
             try {
                 if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                     const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
@@ -650,7 +671,6 @@
                 console.warn("Flash matériel non accessible, utilisation du mode écran lumineux.", e);
             }
 
-            // Mode de repli : Clignotement de l'écran blanc (Strobe visuel)
             let isWhite = true;
             sosInterval = setInterval(() => {
                 overlay.style.background = isWhite ? '#ffffff' : '#000000';
@@ -836,7 +856,12 @@
 - Vent : ${ventInfo}
 - Flammes : ${flammes}
 - Blessés : ${blesses} | Voitures : ${voitures} | Animaux : ${animaux} | Risque élec/gaz : ${reseaux}`;
+        
         document.getElementById('synthese-texte').innerText = texte;
+        
+        // Mise à jour dynamique du lien SMS d'urgence vers le 114
+        const smsBtn = document.getElementById('btn-sms-114');
+        smsBtn.href = `sms:114?body=${encodeURIComponent(texte)}`;
     }
 
     document.getElementById('photo-input').addEventListener('change', function(event) {
