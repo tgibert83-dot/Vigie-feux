@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
   <meta name="theme-color" content="#020617">
-  <meta name="description" content="Vigie Feu — assistance citoyenne à la localisation et à la transmission d'informations lors d'un départ de feu.">
+  <meta name="description" content="Vigie Feu — assistance citoyenne à la localisation et à la transmission d'informations lors d'un départ de feu.[span_0](start_span)[span_0](end_span)">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <title>Vigie Feu — V2</title>
@@ -29,8 +29,8 @@
     .btn{border:1px solid var(--line);background:#0b1220;color:#cbd5e1;border-radius:12px;padding:8px 11px;font-size:11px;font-weight:700}
     .brand{display:flex;gap:13px;align-items:center;background:linear-gradient(90deg,#0f172a,#0b122080);border:1px solid var(--line);
       border-radius:22px;padding:14px;box-shadow:0 14px 35px #0005}
-    .logo{width:52px;height:52px;border-radius:17px;background:linear-gradient(135deg,#4c0519,#312e81);display:grid;place-items:center;border:1px solid #475569}
-    .logo svg{width:34px}
+    .logo{width:56px;height:56px;border-radius:17px;overflow:hidden;border:1px solid #475569;flex:none;background:#000}
+    .logo img{width:100%;height:100%;object-fit:cover}
     h1{font-size:25px;margin:0;font-weight:900;letter-spacing:-.04em}
     .sub{font-size:11px;color:var(--muted);margin-top:4px}
     section{background:#0f172af0;border:1px solid #1e293bcc;border-radius:25px;padding:17px;margin-top:14px;box-shadow:0 14px 30px #0005}
@@ -94,11 +94,7 @@
 
   <header class="brand">
     <div class="logo" aria-hidden="true">
-      <svg viewBox="0 0 64 64" fill="none">
-        <circle cx="32" cy="32" r="26" stroke="#a5b4fc" stroke-width="4"/>
-        <path d="M32 8v48M8 32h48" stroke="#64748b" stroke-width="2"/>
-        <path d="M32 13l8 24-8-4-8 4 8-24z" fill="#fb7185"/>
-      </svg>
+      <img src="./favicon.png" alt="Vigie Feu Logo">
     </div>
     <div>
       <h1>Vigie Feu 🧭</h1>
@@ -221,7 +217,7 @@
   <footer class="footer">
     <strong>Vigie Feu — prototype citoyen</strong><br>
     Ne vous exposez jamais pour utiliser l'application.<br>
-    © 2026 Tristan Gibert
+    © 2026 Tristan Gibert[span_1](start_span)[span_1](end_span)
   </footer>
 </div>
 
@@ -423,19 +419,31 @@ if(navigator.geolocation){
   watchId=navigator.geolocation.watchPosition(handlePosition,gpsError,{enableHighAccuracy:true,timeout:20000,maximumAge:5000});
 }
 
+let smoothedHeading = null;
 function orientationHandler(e){
   let raw=null;
   if(Number.isFinite(e.webkitCompassHeading)) raw=e.webkitCompassHeading;
   else if(Number.isFinite(e.alpha)) raw=e.absolute ? (360-e.alpha) : (360-e.alpha);
   if(!Number.isFinite(raw)) return;
   raw=((raw%360)+360)%360;
-  state.heading=Math.round(raw);
+
+  // Lissage pour éviter les sauts brusques de la boussole
+  if(smoothedHeading === null) {
+    smoothedHeading = raw;
+  } else {
+    let diff = raw - smoothedHeading;
+    if (diff > 180) diff -= 360;
+    if (diff < -180) diff += 360;
+    smoothedHeading = (smoothedHeading + diff * 0.2 + 360) % 360;
+  }
+
+  state.heading=Math.round(smoothedHeading);
   $('heading').textContent=`Cap téléphone : ${state.heading}°`;
   $('aim').textContent=`${state.heading}°`;
   $('aimCardinal').textContent=`Direction de visée : ${cardinal(state.heading)} — à confirmer visuellement.`;
   $('headingStatus').textContent='Cap disponible — maintenez le téléphone vers la zone observée.';
   $('headingStatus').className='small';
-  const target=-raw;
+  const target=-smoothedHeading;
   $('dial').style.transform=`rotate(${target}deg)`;
   updateReport();
 }
@@ -515,10 +523,11 @@ $('refreshBtn').addEventListener('click',requestGPS);
 $('compassBtn').addEventListener('click',activateCompass);
 $('cameraInput').addEventListener('change',e=>e.target.files?.[0]&&drawPhoto(e.target.files[0]));
 $('sharePhotoBtn').addEventListener('click',sharePhoto);$('clearPhotoBtn').addEventListener('click',clearPhoto);
+$('copyBtn').async=false;
 $('copyBtn').addEventListener('click',copyMessage);$('copyBtn2').addEventListener('click',copyMessage);
 $('infoBtn').addEventListener('click',()=>$('infoModal').classList.add('open'));
 $('closeInfo').addEventListener('click',()=>$('infoModal').classList.remove('open'));
-$('infoModal').addEventListener('click',e=>{if(e.target===$('infoModal'))$('infoModal').classList.remove('open')});
+$('infoModal').addEventListener('click',e=>{if(e.target===$('infoModal'))$('infoModal'].classList.remove('open')});
 
 if('serviceWorker' in navigator) window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
 requestGPS();
