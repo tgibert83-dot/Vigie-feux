@@ -96,6 +96,37 @@
             letter-spacing: -0.01em;
         }
 
+        details summary {
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #f1f5f9;
+            outline: none;
+            list-style: none; /* Cache le marqueur par défaut sur certains navigateurs */
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        details summary::-webkit-details-marker {
+            display: none;
+        }
+
+        details summary::after {
+            content: '▼';
+            font-size: 0.75rem;
+            margin-left: auto;
+            transition: transform 0.2s ease;
+        }
+
+        details[open] summary::after {
+            transform: rotate(180deg);
+        }
+
+        details .details-content {
+            margin-top: 16px;
+        }
+
         .btn-call {
             display: flex;
             align-items: center;
@@ -379,14 +410,19 @@
 
     <a href="tel:112" class="btn-call">📞 APPELER LE 112 / 18</a>
 
+    <!-- Menu dépliant d'information & Sécurité -->
     <div class="card">
-        <h2>ℹ️ À propos & Consignes de Sécurité</h2>
-        <div class="safety-box">
-            <b>⚠️ Règle d'or :</b> Votre premier réflexe absolu est de <b>vous mettre à l'abri et de ne jamais vous mettre en danger</b>. N'essayez pas de combattre un feu par vos propres moyens si votre sécurité est menacée.
-        </div>
-        <div class="info-box">
-            <b>À quoi sert cette application ?</b> Vigie-Feux vous permet de compiler rapidement un rapport d'alerte précis (adresse, géolocalisation GPS, orientation, vent automatique, photos horodatées et état de la situation) pour le transmettre instantanément aux secours ou à vos proches.
-        </div>
+        <details>
+            <summary>ℹ️ À propos & Consignes de Sécurité</summary>
+            <div class="details-content">
+                <div class="safety-box">
+                    <b>⚠️ Règle d'or :</b> Votre premier réflexe absolu est de <b>vous mettre à l'abri et de ne jamais vous mettre en danger</b>. N'essayez pas de combattre un feu par vos propres moyens si votre sécurité est menacée.
+                </div>
+                <div class="info-box">
+                    <b>À quoi sert cette application ?</b> Vigie-Feux vous permet de compiler rapidement un rapport d'alerte précis (adresse, géolocalisation GPS, orientation, vent automatique, photos horodatées et état de la situation) pour le transmettre instantanément aux secours ou à vos proches.
+                </div>
+            </div>
+        </details>
     </div>
 
     <div class="card">
@@ -399,7 +435,18 @@
     </div>
 
     <div class="card">
-        <h2>🧭 Orientation & 🌬️ Vent</h2>
+        <h2>🧭 Orientation & 
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" style="vertical-align: middle; margin-left: 4px;" xmlns="http://www.w3.org/2000/svg">
+                <!-- Mât de la manche à air -->
+                <line x1="4" y1="2" x2="4" y2="22" stroke="#94a3b8" stroke-width="2.5" stroke-linecap="round"/>
+                <!-- Panier / Cercle support -->
+                <ellipse cx="6" cy="4" rx="2" ry="1" fill="none" stroke="#e2e8f0" stroke-width="1.5"/>
+                <!-- Cône de la manche à air (Rouge et Blanc style aéroport) -->
+                <path d="M6 3 L20 7 L20 13 L6 11 Z" fill="#ef4444"/>
+                <path d="M10.5 4.2 L13.5 5.1 L13.5 10.1 L10.5 9.2 Z" fill="#ffffff"/>
+                <path d="M16.5 6 L19.5 6.9 L19.5 11.9 L16.5 11 Z" fill="#ffffff"/>
+            >
+        </h2>
         <div class="compass-container">
             <div class="compass-dial">
                 <div class="compass-labels">
@@ -414,7 +461,7 @@
             <div style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 12px;">Astuce : faites un mouvement en 8 avec le téléphone.</div>
             <button class="btn-action btn-secondary" onclick="initCompass()" style="max-width: 200px; margin: 0 auto;">Activer la boussole</button>
         </div>
-        <label for="vent-manuel" style="margin-top: 15px;">🌬️ Force et direction du vent (Manche à air) :</label>
+        <label for="vent-manuel" style="margin-top: 15px;">Force et direction du vent (Manche à air) :</label>
         <input type="text" id="vent-manuel" value="Récupération météo en cours..." placeholder="Ex: Vent d'Ouest, 30 km/h...">
     </div>
 
