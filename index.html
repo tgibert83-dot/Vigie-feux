@@ -380,8 +380,8 @@
             <div style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 12px;">Astuce : faites un mouvement en 8 avec le téléphone.</div>
             <button class="btn-action btn-secondary" onclick="initCompass()" style="max-width: 200px; margin: 0 auto;">Activer la boussole</button>
         </div>
-        <label for="vent-manuel" style="margin-top: 15px;">Force et direction du vent :</label>
-        <input type="text" id="vent-manuel" value="Vent faible, direction variable" placeholder="Ex: Vent fort d'Ouest, 30 km/h...">
+        <label for="vent-manuel" style="margin-top: 15px;">Force et direction du vent (Automatique ou modifiable) :</label>
+        <input type="text" id="vent-manuel" value="Récupération météo en cours..." placeholder="Ex: Vent d'Ouest, 30 km/h...">
     </div>
 
     <div class="card">
@@ -432,12 +432,35 @@
                     const accuracy = Math.round(position.coords.accuracy);
                     document.getElementById('geo-status').innerHTML = `✅ Position GPS verrouillée (~${accuracy}m)`;
                     document.getElementById('geo-details').innerHTML = `<b>GPS :</b> ${lat}, ${lon} <br><a href="https://maps.google.com/?q=${lat},${lon}" target="_blank" style="color:#60a5fa; font-weight:500;">Ouvrir sur la carte</a>`;
+                    
+                    // Récupération automatique de la météo via Open-Meteo
+                    fetchMeteo(lat, lon);
+                    
                     updateSynthese();
                 },
                 (error) => { document.getElementById('geo-status').innerHTML = `❌ Erreur GPS : ${error.message}`; updateSynthese(); },
                 { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
             );
         } else { document.getElementById('geo-status').innerHTML = "❌ Géolocalisation non supportée."; updateSynthese(); }
+    }
+
+    async function fetchMeteo(latitude, longitude) {
+        try {
+            const response = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=wind_speed_10m,wind_direction_10m`);
+            const data = await response.json();
+            if (data && data.current) {
+                const speed = data.current.wind_speed_10m;
+                const deg = data.current.wind_direction_10m;
+                const dirCard = getCardinalDirection(deg);
+                const ventTexte = `${speed} km/h, direction ${dirCard} (${deg}°)`;
+                document.getElementById('vent-manuel').value = ventTexte;
+                updateSynthese();
+            }
+        } catch (e) {
+            console.warn("Impossible de récupérer la météo en ligne : ", e);
+            document.getElementById('vent-manuel').value = "Non disponible (saisie libre)";
+            updateSynthese();
+        }
     }
 
     function initCompass() {
