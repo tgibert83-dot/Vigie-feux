@@ -1,6 +1,7 @@
 {
   "name": "Vigie-Feux",
   "short_name": "Vigie-Feux",
+  "description": "Application d'assistance d'urgence pour compiler et transmettre rapidement un rapport d'alerte incendie géolocalisé aux secours.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
