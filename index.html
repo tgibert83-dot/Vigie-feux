@@ -907,6 +907,15 @@
         element.addEventListener('change', updateSynthese);
     });
     initGeo();
+
+    // Enregistrement du Service Worker pour PWABuilder
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('./sw.js')
+                .then(reg => console.log('Service Worker enregistré !', reg.scope))
+                .catch(err => console.log('Erreur enregistrement SW:', err));
+        });
+    }
 </script>
 </body>
 </html>
