@@ -563,7 +563,7 @@
             <button class="btn-action btn-secondary" onclick="initCompass()" style="max-width: 200px; margin: 0 auto;">Activer la boussole</button>
         </div>
         <label for="vent-manuel" style="margin-top: 15px; display: flex; align-items: center; gap: 6px;">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" style="vertical-align: middle;" xmlns="http://www.w3.org/2000/svg">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" style="vertical-align: middle;" xmlns="http://www.w3.0/2000/svg">
                 <line x1="4" y1="2" x2="4" y2="22" stroke="#94a3b8" stroke-width="2.5" stroke-linecap="round"/>
                 <ellipse cx="6" cy="4" rx="2" ry="1" fill="none" stroke="#e2e8f0" stroke-width="1.5"/>
                 <path d="M6 3 L20 7 L20 13 L6 11 Z" fill="#ef4444"/>
@@ -579,6 +579,8 @@
         <h2>🔥 Situation sur place</h2>
         <div class="checkbox-group">
             <label class="checkbox-label"><input type="checkbox" id="blesses"> ⚠️ Présence de blessé(s)</label>
+            <label class="checkbox-label"><input type="checkbox" id="personnes-risque"> 🥾 Personnes prises au piège / Randonneurs en danger</label>
+            <label class="checkbox-label"><input type="checkbox" id="habitations-proximite"> 🏠 Habitations ou bâtiments à proximité immédiate</label>
             <label class="checkbox-label"><input type="checkbox" id="voitures"> 🚗 Véhicules bloqués / en danger</label>
             <label class="checkbox-label"><input type="checkbox" id="animaux"> 🐾 Animaux en danger</label>
             <label class="checkbox-label"><input type="checkbox" id="reseaux"> ⚡ Risque électrique ou gaz (lignes, coffrets)</label>
@@ -839,6 +841,8 @@
         const chemin = document.getElementById('chemin-carrossable').value.trim() || "Non précisé";
         const ventInfo = document.getElementById('vent-manuel').value.trim() || "Non précisé";
         const blesses = document.getElementById('blesses').checked ? "OUI" : "Non";
+        const personnesRisque = document.getElementById('personnes-risque').checked ? "OUI" : "Non";
+        const habitationsProximite = document.getElementById('habitations-proximite').checked ? "OUI" : "Non";
         const voitures = document.getElementById('voitures').checked ? "OUI" : "Non";
         const animaux = document.getElementById('animaux').checked ? "OUI" : "Non";
         const reseaux = document.getElementById('reseaux').checked ? "OUI" : "Non";
@@ -853,7 +857,7 @@
 - Mon Cap : ${headingStr}
 - Vent : ${ventInfo}
 - Flammes : ${flammes}
-- Blessés : ${blesses} | Voitures : ${voitures} | Animaux : ${animaux} | Risque élec/gaz : ${reseaux}`;
+- Blessés : ${blesses} | Personnes/Randonneurs en danger : ${personnesRisque} | Habitations proches : ${habitationsProximite} | Voitures : ${voitures} | Animaux : ${animaux} | Risque élec/gaz : ${reseaux}`;
         
         document.getElementById('synthese-texte').innerText = texte;
         
