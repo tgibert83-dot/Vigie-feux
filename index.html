@@ -225,7 +225,6 @@
             font-weight: 700;
         }
 
-        /* Bouton SMS 114 modernisé pour le bas de page */
         .btn-sms-114 {
             display: flex;
             align-items: center;
@@ -619,7 +618,7 @@
             <summary>🍏 Utilisation sur iPhone / iPad (iOS)</summary>
             <div class="details-content">
                 <div class="info-box" style="margin-bottom: 0;">
-                    <b>💡 Application Web (PWA) :</b> Ne nécessitant pas de compte payant sur l'App Store, Vigie-Feux s'installe directement depuis votre navigateur Safari en quelques secondes :
+                    <b>💡 Installation de l'application :</b> Vous pouvez installer Vigie-Feux directement depuis votre navigateur Safari en quelques secondes :
                     <ol style="margin: 8px 0 0 -15px; line-height: 1.5;">
                         <li>Ouvrez cette page dans <b>Safari</b>.</li>
                         <li>Touchez le bouton <b>Partager</b> <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="vertical-align: middle;"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path><polyline points="16 6 12 2 8 6"></polyline><line x1="12" y1="2" x2="12" y2="15"></line></svg> dans la barre d'outils.</li>
@@ -858,7 +857,6 @@
         
         document.getElementById('synthese-texte').innerText = texte;
         
-        // Mise à jour dynamique du lien SMS d'urgence vers le 114
         const smsBtn = document.getElementById('btn-sms-114');
         smsBtn.href = `sms:114?body=${encodeURIComponent(texte)}`;
     }
@@ -926,7 +924,6 @@
     });
     initGeo();
 
-    // Enregistrement du Service Worker pour PWABuilder
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
             navigator.serviceWorker.register('./sw.js')
